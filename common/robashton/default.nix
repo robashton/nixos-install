@@ -3,36 +3,27 @@
 { config, pkgs, lib, ... }:
 
 let
-  private = import ../private { inherit pkgs; };
-
   tmuxPlugins = with pkgs.tmuxPlugins; [
     resurrect
     sessionist
   ];
 in
-{
-  imports = [
-    ./emacs.nix
-  ];
 
-  # Don't forget to set a password with ‘passwd’.
-  users.extraGroups.stears = {
+  users.extraGroups.robashton = {
     gid = 1000;
   };
 
-  users.users.stears = {
+  users.users.robashton = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "docker" "wireshark" "video" "vboxusers" ];
+    extraGroups = [ "wheel" "networkmanager" "docker" "wireshark" "video" ];
     createHome = true;
-    home = "/home/stears";
+    home = "/home/robashton";
     uid = 1000;
-    group = "stears";
-    shell = "${pkgs.zsh}/bin/zsh";
+    group = "robashton";
+    shell = "${pkgs.bsh}/bin/bsh";
 
     openssh.authorizedKeys.keys = [
-      (import ./files/pubkey-philip-yk.nix)
-      (import ./files/pubkey-philip-kp2a.nix)
-      (import ./files/pubkey-philip-old.nix)
+      (import ./files/pubkey-ashton-xps.nix)
     ];
   };
 
@@ -80,30 +71,14 @@ in
       # xdg-screensaver to find
       xautolock
 
-      # My stuff
-      private.packages.jump
-      private.packages.project
-
       # So we get access to udiskie-mount
       udiskie
     ]) ++ tmuxPlugins;
 
-    # So Skype doesn't log out on each restart -
-    # this starts the gnome-keyring as a user
-    # service
-    services.gnome-keyring = {
-      enable = true;
-      components = [ "secrets" ];
-    };
-
     programs.git = {
       enable = true;
-      userName  = "philipstears";
-      userEmail = "philip@philipstears.com";
-      signing = {
-        signByDefault = true;
-        key = "FA836504B26D139A";
-      };
+      userName  = "robashton";
+      userEmail = "robashton@codeofrob.com";
     };
 
     programs.vim = {
@@ -117,6 +92,38 @@ in
         "vim-fugitive"
         "youcompleteme"
         "typescript-vim"
+        "ack.vim"
+        "ctrlp.vim"
+        "elm-vim"
+        "erlang-motions.vim"
+        "haskell-vim"
+        "nerdtree"
+        "paredit.vim"
+        "psc-ide-vim"
+        "purescript-vim"
+        "syntastic"
+        "tslime.vim"
+        "vim-airline"
+        "vim-clojure-static"
+        "vim-coffee-script"
+        "vim-dispatch"
+        "vim-easymotion"
+        "vim-erlang-compiler"
+        "vim-erlang-runtime"
+        "vim-erlang-tags"
+        "vim-fireplace"
+        "vim-hdevtools"
+        "vim-javascript"
+        "vim-jst"
+        "vim-jsx"
+        "vim-nodejs-errorformat"
+        "vim-rails"
+        "vim-redl"
+        "vim-sensible"
+        "vim-solarized"
+        "vim-stylus"
+        "vim-surround"
+        "vimproc"
       ];
       settings = { ignorecase = true; };
       extraConfig = (builtins.readFile ./files/vimrc);
@@ -128,41 +135,9 @@ in
       enable = true;
     };
 
-    # Per-user ZSH stuff, builds on the global bits
-    programs.zsh = {
-      enable = true;
-      dotDir = ".config/zsh";
-      history = {
-        share = false;
-      };
-      shellAliases = {
-      };
-      sessionVariables = {
-      };
-      initExtra = ''
-        # Update history incrementally
-        INC_APPEND_HISTORY="true"
-
-        DISABLE_AUTO_TITLE="true"
-
-        # Colors please
-        eval "$(dircolors -b)"
-
-        # Hide default user prompt
-        DEFAULT_USER=''${USER}
-
-        # Let Java know that we're using a non-reparenting WM
-        export _JAVA_AWT_WM_NONREPARENTING=1
-      '';
-      profileExtra = ''
-      '';
-      plugins = [];
-    };
-
     programs.direnv = {
       enable = true;
       enableBashIntegration = true;
-      enableZshIntegration = true;
     };
 
     programs.home-manager = {
