@@ -8,8 +8,6 @@ let
     rev = "dd94a849df69fe62fe2cb23a74c2b9330f1189ed";
     ref = "release-18.09";
   };
-
-  private = import ./private { inherit pkgs; };
 in
 {
   imports =
@@ -21,8 +19,6 @@ in
 
   # Can't get this working with virtualbox
   # boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  networking.extraHosts = private.configuration.hosts;
 
   # Select internationalisation properties.
   i18n = {
@@ -37,7 +33,7 @@ in
   services.timesyncd.enable = true; # the default, but explicitness is a good thing
   time.timeZone = "Europe/London";
 
-  # Reasons:
+  nixpkgs.config.allowUnfree = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget

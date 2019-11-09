@@ -6,7 +6,7 @@ let
   private = import ../private { inherit pkgs; };
 in
 {
-  home-manager.users.stears = {
+  home-manager.users.robashton = {
     home.file.".xmobarrc".source = ./files/xmobarrc;
   };
 }

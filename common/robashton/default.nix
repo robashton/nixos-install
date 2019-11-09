@@ -8,6 +8,7 @@ let
     sessionist
   ];
 in
+ {
 
   users.extraGroups.robashton = {
     gid = 1000;
@@ -27,7 +28,7 @@ in
     ];
   };
 
-  home-manager.users.stears = {
+  home-manager.users.robashton = {
     home.packages = (with pkgs; [
       ktouch
       spotify
@@ -92,38 +93,37 @@ in
         "vim-fugitive"
         "youcompleteme"
         "typescript-vim"
-        "ack.vim"
-        "ctrlp.vim"
+        "ack-vim"
+        "ctrlp"
         "elm-vim"
-        "erlang-motions.vim"
         "haskell-vim"
         "nerdtree"
-        "paredit.vim"
-        "psc-ide-vim"
-        "purescript-vim"
-        "syntastic"
-        "tslime.vim"
-        "vim-airline"
-        "vim-clojure-static"
-        "vim-coffee-script"
-        "vim-dispatch"
-        "vim-easymotion"
-        "vim-erlang-compiler"
-        "vim-erlang-runtime"
-        "vim-erlang-tags"
-        "vim-fireplace"
-        "vim-hdevtools"
-        "vim-javascript"
-        "vim-jst"
-        "vim-jsx"
-        "vim-nodejs-errorformat"
-        "vim-rails"
-        "vim-redl"
-        "vim-sensible"
-        "vim-solarized"
-        "vim-stylus"
-        "vim-surround"
-        "vimproc"
+#        "paredit"
+#        "psc-ide-jj"
+#        "purescript-vim"
+#        "syntastic"
+#        "tslime-vim"
+#        "vim-airline"
+#        "vim-clojure-static"
+#        "vim-coffee-script"
+#        "vim-dispatch"
+#        "vim-easymotion"
+#        "vim-erlang-compiler"
+#        "vim-erlang-runtime"
+#        "vim-erlang-tags"
+#        "vim-fireplace"
+#        "vim-hdevtools"
+#        "vim-javascript"
+#        "vim-jst"
+#        "vim-jsx"
+#        "vim-nodejs-errorformat"
+#        "vim-rails"
+#        "vim-redl"
+#        "vim-sensible"
+#        "vim-solarized"
+#        "vim-stylus"
+#        "vim-surround"
+#        "vimproc"
       ];
       settings = { ignorecase = true; };
       extraConfig = (builtins.readFile ./files/vimrc);
