@@ -241,6 +241,14 @@ let
     }; 
   }; 
 
+  customPlugins.vim-colorschemes = pkgs.vimUtils.buildVimPlugin {
+    name = "vim-colorschemes";
+    src = pkgs.fetchurl {
+      url = "https://github.com/flazz/vim-colorschemes/archive/9e7ab1cfec5d3db85aa1c4e87329fd869ecf94e9.tar.gz";
+      sha256 = "1dgg18nx32hs68az76pj0k7d2ijhms5hpicn985wlmsmmlhmkdar";
+    };
+  };
+
   customVim = (pkgs.vim_configurable.customize {
         name = "vim";
         vimrcConfig.vam.knownPlugins = customPlugins // pkgs.vimPlugins;
@@ -280,6 +288,7 @@ let
             "vim-erlang-compiler"
             "elm-vim"
             "purescript-vim"
+            "vim-colorschemes"
             ]; }
         ];
       });

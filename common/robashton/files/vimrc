@@ -136,7 +136,7 @@ nmap f <Plug>(easymotion-bd-f)
 nmap F <Plug>(easymotion-overwin-f)
 
 "Gotta do it this way or the theme won't get loaded"
-function! SetDarkTheme()
+function! SetDarkTheme() 
   colorscheme Tomorrow-Night-Bright
   highlight NonText ctermfg=black
   highlight SpellBad ctermfg=black
@@ -226,6 +226,8 @@ if !empty(glob("rebar.config"))
   :set path+=apps/**
   :set path+=deps/**
 endif
+
+
 
 if !empty(glob(".git"))
   function! GitLsFilesModified(A,L,P)

@@ -35,8 +35,14 @@ in
 
   nixpkgs.config.allowUnfree = true;
 
+  environment.interactiveShellInit = ''
+    alias vi='vim'
+  '';
+
   # List packages installed in system profile. To search, run:
   # $ nix search wget
+
+
   environment.systemPackages = with pkgs; [
 
     # Admin & Development Tools
