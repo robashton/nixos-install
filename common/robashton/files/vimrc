@@ -92,7 +92,7 @@ nnoremap <C-a>a :Papply<cr>
 
 
 " Load all the plug-ins
-call pathogen#infect()
+" call pathogen#infect()
 
 " It's dirty, but this is an easy way to resize my windows
 nnoremap <C-left> :vertical resize -10<cr>

@@ -41,7 +41,7 @@ in
 
     # Admin & Development Tools
     wget
-    vim
+    #vim
     pavucontrol
     openssh
     git git-lfs
@@ -68,6 +68,7 @@ in
     fwupd
     shellcheck
     nixops
+    gccStdenv 
 
     # Docker - until I can obviate it
     docker
@@ -99,7 +100,33 @@ in
 
     # Hardware Acceleration Utilities
     libva-utils
+    glxinfo
+
+    ( writeScriptBin "ra-audio-get-master-volume" ''
+      #!${pkgs.bash}/bin/bash
+      amixer sget Master | awk -F '[][]' '/.*Left:/ { print $2 }'
+    ''
+    )
+  
+    ( writeScriptBin "ra-audio-get-master-status" ''
+      #!${pkgs.bash}/bin/bash
+      amixer sget Master | awk -F '[][]' '/.*Left:/ { print $4 }'
+    ''
+    )
+  
+    ( writeScriptBin "ra-audio-get-capture-volume" ''
+       #!${pkgs.bash}/bin/bash
+       amixer sget Capture | awk -F '[][]' '/.*Left:/ { print $2 }'
+    ''
+    )
+  
+    ( writeScriptBin "ra-audio-get-capture-status" ''
+       #!${pkgs.bash}/bin/bash
+       amixer sget Capture | awk -F '[][]' '/.*Left:/ { print $4 }'
+    ''
+    ) 
   ];
+
 
   virtualisation = {
     docker = {
@@ -158,13 +185,12 @@ in
   services.xserver = {
     enable = true;
     layout = "us";
+    xkbOptions = "ctrl:swapcaps";
 
     displayManager = {
       lightdm.enable = true;
-
-      # TODO: There has to be a better place for this
       sessionCommands = ''
-        ${pkgs.feh}/bin/feh --bg-fill ~/.config/wallpapers/towelday2013-A.jpg
+        ${pkgs.feh}/bin/feh --bg-fill ~/.config/wallpapers/rainbow-dash.jpg
       '';
     };
 
@@ -186,24 +212,17 @@ in
     };
   };
 
-  security.sudo.extraRules = lib.mkAfter [
-    {
-      groups = [ "robashton" ];
-      commands = [
-        {
-          command = ''${pkgs.systemd}/bin/systemctl restart pcscd'';
-          options = [ "NOPASSWD" ];
-        }
-      ];
-    }
-  ];
-
   services.compton = {
+    vSync           = true;
+    backend         = "glx";
     enable          = true;
-    # fade            = true;
+    fade            = true;
+    shadow          = true;
     # inactiveOpacity = "0.9";
-    # shadow          = true;
-    # fadeDelta       = 4;
+    fadeDelta       = 4;
+    opacityRules    = [
+      "90:class_g *= 'Alacritty'"
+    ];
   };
 
   # services.xserver.xkbOptions = "eurosign:e";
