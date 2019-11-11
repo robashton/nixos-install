@@ -8,6 +8,8 @@ let
     rev = "dd94a849df69fe62fe2cb23a74c2b9330f1189ed";
     ref = "release-18.09";
   };
+
+  private = import ./private { inherit pkgs; };
 in
 {
   imports =
@@ -174,6 +176,8 @@ in
     challengeResponseAuthentication = false;
     openFirewall = false;
   };
+
+  networking.extraHosts = private.configuration.hosts;
 
   # Allow docker0 to bypass the firewall
   networking.firewall.extraCommands = ''
