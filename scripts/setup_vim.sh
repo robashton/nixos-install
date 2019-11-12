@@ -59,5 +59,5 @@ echo $NAMES
 #install_plugin "https://github.com/vim-erlang/vim-erlang-compiler" "vim-erlang-compiler"
 #install_plugin "https://github.com/ElmCast/elm-vim.git" "elm-vim"
 #install_plugin "https://github.com/raichoo/purescript-vim.git" "purescript-vim"
-install_plugin "https://github.com/flazz/vim-colorschemes.git" "vim-colorschemes"
-
+#install_plugin "https://github.com/flazz/vim-colorschemes.git" "vim-colorschemes" 
+install_plugin "https://github.com/FrigoEU/psc-ide-vim.git" "vim-psc-ide" 

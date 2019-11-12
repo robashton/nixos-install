@@ -249,6 +249,13 @@ let
     };
   };
 
+  customPlugins.vim-psc-ide = pkgs.vimUtils.buildVimPlugin {
+    name = "vim-psc-ide"; src = pkgs.fetchurl {
+      url = "https://github.com/FrigoEU/psc-ide-vim/archive/5fb4e329e5c0c7d80f0356ab4028eee9c8bd3465.tar.gz";
+      sha256 = "147mbrvmqwyf0yabjqs69wy8k8nsc862cp2cavh5nzmw3qa61jwv";
+    };
+  };
+
   customVim = (pkgs.vim_configurable.customize {
         name = "vim";
         vimrcConfig.vam.knownPlugins = customPlugins // pkgs.vimPlugins;
@@ -289,6 +296,7 @@ let
             "elm-vim"
             "purescript-vim"
             "vim-colorschemes"
+            "vim-psc-ide"
             ]; }
         ];
       });
