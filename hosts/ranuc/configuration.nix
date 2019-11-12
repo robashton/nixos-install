@@ -28,16 +28,20 @@
   networking.firewall.allowPing = true;
 
   networking.firewall = {
+    trustedInterfaces = [
+      "arqiva0" "arqiva1" "arqiva2" "arqiva3" "arqiva4" ]; 
     allowedTCPPorts = [
       22    # SSH
+      8080  # dev
     ];
 
-    allowedUDPPorts = [
-    ];
+    allowedUDPPorts = [];
 
-    allowedUDPPortRanges = [
-    ];
+    allowedUDPPortRanges = [];
+
   };
+
+
 
   # VAAPI
   # https://nixos.wiki/wiki/Accelerated_Video_Playback
@@ -45,8 +49,14 @@
     enable = true;
     extraPackages = with pkgs; [
       vaapiIntel
-      vaapiVdpau
-      libvdpau-va-gl
+#      intel-media-driver
+      (pkgs.intel-media-driver.overrideAttrs (oldAttrs: {
+        name = "intel-media-driver";
+        postFixup = ''
+          patchelf --set-rpath "$(patchelf --print-rpath $out/lib/dri/iHD_drv_video.so):${stdenv.lib.makeLibraryPath [ xorg.libX11  ]}" \
+            $out/lib/dri/iHD_drv_video.so
+        '';
+      }))
     ];
   };
 }

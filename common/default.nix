@@ -184,6 +184,10 @@ in
     ip46tables -I nixos-fw 1 -i docker0 -j nixos-fw-accept
   '';
 
+  networking.dhcpcd.extraConfig = ''
+        noipv4ll
+      '';
+
   # Enable CUPS to print documents.
   services.printing.enable = true;
 

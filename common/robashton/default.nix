@@ -295,6 +295,14 @@ let
 in
  {
 
+  nix.trustedUsers = [
+    "robashton"
+  ];
+
+  users.extraGroups.robashton = {
+    gid = 1000;
+  };
+
   users.users.robashton = {
     isNormalUser = true;
     extraGroups = [ "wheel" "networkmanager" "docker" "wireshark" "video" ];
