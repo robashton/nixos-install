@@ -305,7 +305,7 @@ in
 
   users.users.robashton = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "docker" "wireshark" "video" ];
+    extraGroups = [ "wheel" "networkmanager" "docker" "wireshark" "video" "tmux"];
     createHome = true;
     home = "/home/robashton";
     group = "robashton";
@@ -324,6 +324,9 @@ in
       imagemagick
       electrum
       gimp
+
+      # Experiment
+      termite
 
       khal
 

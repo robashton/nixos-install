@@ -17,10 +17,8 @@ in
       "${home-manager}/nixos"
 
       ./robashton
+      ./stears
     ];
-
-  # Can't get this working with virtualbox
-  # boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # Select internationalisation properties.
   i18n = {
@@ -41,9 +39,16 @@ in
     alias vi='vim'
   '';
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
+  users.extraGroups.tmux = {
+    gid = 2000;
+  };
 
+  system.activationScripts = {
+      mnt = {
+        text = ''mkdir -p /var/tmux && chgrp -R tmux /var/tmux && chmod -R 2775 /var/tmux/'';
+        deps = [];
+      };
+  };
 
   environment.systemPackages = with pkgs; [
 
@@ -133,6 +138,18 @@ in
        amixer sget Capture | awk -F '[][]' '/.*Left:/ { print $4 }'
     ''
     ) 
+
+    ( writeScriptBin "id3as-tmux-create" ''
+      #!${pkgs.bash}/bin/bash
+      tmux -S /var/tmux/$1 new -s $1
+    ''
+    )
+
+    ( writeScriptBin "id3as-tmux-attach" ''
+      #!${pkgs.bash}/bin/bash
+      tmux -S /var/tmux/$1 attach -t $1
+    ''
+    )
   ];
 
 
@@ -195,11 +212,14 @@ in
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
+
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
     layout = "us";
     xkbOptions = "ctrl:swapcaps";
+
+    videoDrivers = [ "iHD" "i965" ];
 
     displayManager = {
       lightdm.enable = true;
