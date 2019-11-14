@@ -59,4 +59,5 @@
       }))
     ];
   };
+  services.xserver.xkbOptions = "altwin:swap_alt_win";
 }
