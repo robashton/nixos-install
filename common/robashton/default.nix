@@ -415,6 +415,7 @@ in
       recursive = true;
     };
 
+    home.file.".ssh/id_rsa".source = ../private/sources/nixos-install-private/id_rsa;
     home.file.".config/alacritty/alacritty.yml".source = ./files/alacritty.yml;
 
     programs.tmux = {
