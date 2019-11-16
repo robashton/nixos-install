@@ -373,6 +373,9 @@ in
       # xdg-screensaver to find
       xautolock
 
+      # For the laptops
+      acpi
+
       # So we get access to udiskie-mount
       udiskie
     ]) ++ tmuxPlugins;
@@ -415,7 +418,7 @@ in
       recursive = true;
     };
 
-    home.file.".ssh/id_rsa".source = ../private/sources/nixos-install-private/id_rsa;
+    home.file.".ssh/id_rsa".source = ../private/sources/nixos-install-priv/id_rsa;
     home.file.".config/alacritty/alacritty.yml".source = ./files/alacritty.yml;
 
     programs.tmux = {
@@ -492,13 +495,8 @@ in
                 , ((0                         , xF86XK_AudioStop),        spawn "${pkgs.playerctl}/bin/playerctl stop")
 
                 , (((modMask originalConfig)  , xK_l),                    spawn "xdg-screensaver lock")
-                , (((modMask originalConfig)  , xK_o),                    spawn "otp")
                 , (((modMask originalConfig)  , xK_s),                    spawn "gnome-screenshot -i")
                 , (((modMask originalConfig)  , xK_c),                    spawn "mate-calc")
-                , (((modMask originalConfig)  , xK_n),                    spawn "networkmanager_dmenu")
-
-                , (((modMask originalConfig)  , xK_e),                    spawn "st-kb-english")
-                , (((modMask originalConfig)  , xK_d),                    spawn "st-kb-german")
                 ]
 
           toggleStrutsKey XConfig {XMonad.modMask = modMask} =

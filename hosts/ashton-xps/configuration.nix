@@ -20,15 +20,37 @@
 
   hardware.cpu.intel.updateMicrocode = true;
 
-  networking.hostName = "ashton-nuc";
+  networking.hostName = "ashton-xps";
+
   boot.loader.grub.device = "/dev/nvme0n1";
+  
   networking.wireless.enable = true;
+
+  services.xserver.autorun = true; 
+  services.xserver.videoDrivers = [ "intel" "modesetting" ];
+
+  boot.blacklistedKernelModules = [ "nouveau" ];
+
+#  boot.extraModprobeConfig = ''
+#    options bbswitch load_state=-1 unload_state=1
+#    '';
+
+  #hardware.nvidia.modesetting.enable = true;
+  #hardware.nvidia.optimus_prime.enable = true;
+  #hardware.nvidia.optimus_prime.nvidiaBusId = "PCI:1:0:0";
+  #hardware.nvidia.optimus_prime.intelBusId = "PCI:0:2:0";
+
+  boot.kernelParams = [ "acpi_osi=!" "acpi_osi=\"Windows 2009\""];
+  hardware.bumblebee.enable = true;
+ # hardware.bumblebee.group = "video";
+ # hardware.bumblebee.pmMethod = "bbswitch";
+ # hardware.bumblebee.connectDisplay = true;
+
+  services.xserver.libinput.enable = true;
+  services.xserver.layout = "gb";
 
   # Open ports in the firewall.
   networking.firewall.allowPing = true;
-  services.xserver.layout = "us";
-
-  services.xserver.videoDrivers = [ "i965" ];
 
   networking.firewall = {
     trustedInterfaces = [
@@ -62,5 +84,4 @@
       }))
     ];
   };
-  services.xserver.xkbOptions = "altwin:swap_alt_win";
 }

@@ -65,6 +65,9 @@ in
     # Admin & Development Tools
     wget
     #vim
+
+    bumblebee
+
     pavucontrol
     openssh
     git git-lfs
@@ -120,6 +123,8 @@ in
     alacritty
     feh
     libreoffice-still
+
+    xorg.xbacklight
 
     # Hardware Acceleration Utilities
     libva-utils
@@ -226,10 +231,9 @@ in
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
-    layout = "us";
     xkbOptions = "ctrl:swapcaps";
 
-    videoDrivers = [ "iHD" "i965" ];
+    videoDrivers = [ "i965" ];
 
     displayManager = {
       lightdm.enable = true;

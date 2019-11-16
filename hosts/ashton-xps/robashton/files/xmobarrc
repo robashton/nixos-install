@@ -1,0 +1,38 @@
+Config
+  { font = "xft:Droid Sans Mono:size=12:bold:antialias=true"
+  , bgColor = "#000000"
+  , alpha = 220
+  , fgColor = "grey"
+  , persistent = False
+  , overrideRedirect = True
+  , sepChar = "%"
+  , alignSep = "}{"
+
+  , template = "%StdinReader% | %cpu% %coretemp% | %memory%  }{ Spk: %out-vol% | Mic: %in-vol% | <fc=#ee9a00>%date%</fc>"
+
+  , commands =
+    [ Run StdinReader
+
+    , Run Cpu
+	    [ "-t", "CPU: <total>%"
+	    , "-m", "2"
+	    , "-c", "0"
+	    , "-L", "3"
+	    , "-H" ,"75"
+	    , "--normal", "darkgreen"
+	    , "--low", "darkgreen"
+	    , "--high", "red"
+	    ]
+	    10
+
+    , Run Memory ["-t","Mem: <usedratio>%", "-L", "0", "-M", "40", "-H", "65",  "--low", "darkgreen", "--normal", "darkgreen", "--high", "red" ] 10
+
+    , Run Date "%a %Y-%m-%d %H:%M:%S" "date" 10
+
+    , Run CoreTemp ["-t", "<core0>C (<core1>C <core2>C <core3>C <core4>C)", "-L", "40", "-H", "80", "--low", "lightblue", "--normal", "darkgreen", "-h", "red"] 50
+
+    , Run Com "ra-audio-get-master-volume" [] "out-vol" 10
+    , Run Com "ra-audio-get-capture-volume" []  "in-vol" 10
+    ]
+  }
+
