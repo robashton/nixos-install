@@ -18,6 +18,12 @@
       ./robashton
     ];
 
+  fonts = {
+    fontconfig = {
+      antialias = true;
+    };
+  };
+
   hardware.cpu.intel.updateMicrocode = true;
 
   networking.hostName = "ashton-nuc";
@@ -28,7 +34,7 @@
   networking.firewall.allowPing = true;
   services.xserver.layout = "us";
 
-  services.xserver.videoDrivers = [ "i965" ];
+  services.xserver.videoDrivers = [ "intel" ];
 
   networking.firewall = {
     trustedInterfaces = [
@@ -62,5 +68,5 @@
       }))
     ];
   };
-  services.xserver.xkbOptions = "altwin:swap_alt_win";
+  services.xserver.xkbOptions = "altwin:swap_alt_win, ctrl:swapcaps";
 }

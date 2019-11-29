@@ -28,6 +28,7 @@
   networking.wireless.enable = true;
 
   services.xserver.autorun = true; 
+  services.xserver.xkbOptions = "ctrl:swapcaps";
   services.xserver.videoDrivers = [ "intel" "modesetting" ];
 
   boot.blacklistedKernelModules = [ "nouveau" ];
@@ -40,6 +41,13 @@
   #hardware.nvidia.optimus_prime.enable = true;
   #hardware.nvidia.optimus_prime.nvidiaBusId = "PCI:1:0:0";
   #hardware.nvidia.optimus_prime.intelBusId = "PCI:0:2:0";
+
+  environment.systemPackages = with pkgs; [
+    xorg.xbacklight
+    bumblebee
+    powertop
+    pmutils
+  ];
 
   boot.kernelParams = [ "acpi_osi=!" "acpi_osi=\"Windows 2009\""];
   hardware.bumblebee.enable = true;
@@ -67,10 +75,9 @@
     allowedUDPPorts = [];
 
     allowedUDPPortRanges = [];
+   
 
   };
-
-
 
   # VAAPI
   # https://nixos.wiki/wiki/Accelerated_Video_Playback
