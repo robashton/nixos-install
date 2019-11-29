@@ -18,6 +18,7 @@
       ./robashton
     ];
 
+  powerManagement.enable = true;
   hardware.cpu.intel.updateMicrocode = true;
 
   networking.hostName = "ashton-xps";
@@ -47,6 +48,9 @@
  # hardware.bumblebee.connectDisplay = true;
 
   services.xserver.libinput.enable = true;
+  services.xserver.libinput.clickMethod = "clickfinger";
+  services.xserver.libinput.tapping = false;
+  services.xserver.libinput.disableWhileTyping = true;
   services.xserver.layout = "gb";
 
   # Open ports in the firewall.

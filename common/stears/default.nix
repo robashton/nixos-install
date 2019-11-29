@@ -1,14 +1,6 @@
 # vim: set sts=2 ts=2 sw=2 expandtab :
 
 { config, pkgs, lib, ... }:
-
-let
-  tmuxPlugins = with pkgs.tmuxPlugins; [
-    resurrect
-    sessionist
-  ];
-  customPlugins = {};
-in
  {
 
   users.extraGroups.stears = {};
