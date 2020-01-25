@@ -233,6 +233,11 @@ in
   # Allow docker0 to bypass the firewall
   networking.firewall.extraCommands = ''
     ip46tables -I nixos-fw 1 -i docker0 -j nixos-fw-accept
+    ip46tables -N LOGDROP
+    ip46tables -A LOGDROP -j LOG
+    ip46tables -A LOGDROP -j DROP
+    ip46tables -I INPUT -p tcp --dport 22 -m state --state NEW -m recent --set
+    ip46tables -I INPUT -p tcp --dport 22 -m state --state NEW -m recent  --update --seconds 60 --hitcount 4 -j LOGDROP
   '';
 
   networking.dhcpcd.extraConfig = ''
