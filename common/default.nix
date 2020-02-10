@@ -55,10 +55,11 @@ in
 
     # Admin & Development Tools
     wget
-    #vim
+    ag
 
     wine
 
+    okular
     dropbox-cli
     pavucontrol
     openssh
