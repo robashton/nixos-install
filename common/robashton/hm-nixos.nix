@@ -26,6 +26,8 @@ in
     linphone
     ekiga
 
+    okular
+
     gitAndTools.tig
 
     powerline-fonts

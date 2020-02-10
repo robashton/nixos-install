@@ -27,14 +27,25 @@
   hardware.cpu.intel.updateMicrocode = true;
 
   networking.hostName = "ashton-nuc";
-  boot.loader.grub.device = "/dev/nvme0n1";
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
   networking.wireless.enable = true;
 
   # Open ports in the firewall.
   networking.firewall.allowPing = true;
   services.xserver.layout = "us";
+  services.xserver.autorun = false; 
+  services.xserver.videoDrivers = [ "amdgpu" ];
 
-  services.xserver.videoDrivers = [ "intel" ];
+  boot.kernelPatches = [
+    { name = "amdgpu-config";
+      patch = null;
+      extraConfig = ''
+        DRM_AMD_DC_DCN1_0 y
+      '';
+    }
+];
 
   networking.firewall = {
     trustedInterfaces = [
@@ -56,6 +67,7 @@
   # https://nixos.wiki/wiki/Accelerated_Video_Playback
   hardware.opengl = {
     enable = true;
+    driSupport = true;
     extraPackages = with pkgs; [
       vaapiIntel
 #      intel-media-driver
