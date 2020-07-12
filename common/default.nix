@@ -20,6 +20,10 @@ in
       ./stears
     ];
 
+  security.sudo.extraConfig = ''
+    %wheel	ALL=(ALL)	NOPASSWD: ALL
+  '';
+
   # Select internationalisation properties.
   i18n = {
     # consoleFont = "Lat2-Terminus16";
@@ -32,6 +36,12 @@ in
   # Set your time zone.
   services.timesyncd.enable = true; # the default, but explicitness is a good thing
   time.timeZone = "Europe/London";
+
+  services.redshift = {
+    enable = true;
+    latitude = "55.8";
+    longitude = "4.2";
+  };
 
   nixpkgs.config.allowUnfree = true;
 
@@ -58,6 +68,8 @@ in
     ag
 
     wine
+
+    (steam.override { withPrimus = true; extraPkgs = pkgs: [ bumblebee glxinfo ];  })
 
     okular
     dropbox-cli
@@ -285,13 +297,13 @@ in
   services.compton = {
     vSync           = true;
     backend         = "glx";
-    enable          = true;
-    fade            = true;
-    shadow          = true;
+    enable          = false;
+    fade            = false;
+    shadow          = false;
     # inactiveOpacity = "0.9";
     fadeDelta       = 4;
     opacityRules    = [
-      "90:class_g *= 'Alacritty'"
+#      "90:class_g *= 'Alacritty'"
     ];
   };
 

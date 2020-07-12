@@ -29,6 +29,7 @@
 
   services.xserver.autorun = true; 
   services.xserver.xkbOptions = "ctrl:swapcaps";
+#  services.xserver.synaptics.enable = true;
   services.xserver.videoDrivers = [ "intel" "modesetting" ];
 
   boot.blacklistedKernelModules = [ "nouveau" ];
@@ -56,8 +57,8 @@
  # hardware.bumblebee.connectDisplay = true;
 
   services.xserver.libinput.enable = true;
-  services.xserver.libinput.clickMethod = "clickfinger";
-  services.xserver.libinput.tapping = false;
+  services.xserver.libinput.clickMethod = "buttonareas";
+  services.xserver.libinput.tapping = true;
   services.xserver.libinput.disableWhileTyping = true;
   services.xserver.layout = "gb";
 
@@ -66,7 +67,9 @@
 
   networking.firewall = {
     trustedInterfaces = [
-      "arqiva0" "arqiva1" "arqiva2" "arqiva3" "arqiva4" ]; 
+      "arqiva0" "arqiva1" "arqiva2" "arqiva3" "arqiva4" 
+      "perform0" "perform1" "perform2" "perform3" "perform4" 
+    ]; 
     allowedTCPPorts = [
       22    # SSH
       8080  # dev
