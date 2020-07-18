@@ -8,6 +8,7 @@ let
     ./hm-git.nix
     ./hm-xmonad.nix
     ./hm-direnv.nix
+    ./hm-emacs.nix
   ];
 
   moduleResults = builtins.map runModule modules;
