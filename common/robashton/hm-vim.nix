@@ -249,6 +249,14 @@ let
     };
   };
 
+  customPlugins.vim-lsp = pkgs.vimUtils.buildVimPlugin {
+    name = "vim-lsp";
+    src = pkgs.fetchurl {
+      url = "https://github.com/prabirshrestha/vim-lsp/archive/bb765bb7aff26ef4d71cc28de2b57b730c3d4482.tar.gz";
+      sha256 = "1cb6s6pc5krlvvj8mkp54wz3i3hqra22bjdcvn1nk9fhf5hn65jd";
+    };
+  };
+
   customVim = (pkgs.vim_configurable.customize {
         name = "vim";
         vimrcConfig.vam.knownPlugins = customPlugins // pkgs.vimPlugins;
@@ -287,9 +295,9 @@ let
             "vim-erlang-tags"
             "vim-erlang-compiler"
             "elm-vim"
-            "purescript-vim"
             "vim-colorschemes"
-            "vim-psc-ide"
+            "purescript-vim"
+            "vim-lsp"
             ]; }
         ];
       });

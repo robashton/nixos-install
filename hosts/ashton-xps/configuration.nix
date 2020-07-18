@@ -75,9 +75,9 @@
       8080  # dev
     ];
 
-    allowedUDPPorts = [];
+    allowedUDPPorts = [32005];
 
-    allowedUDPPortRanges = [];
+    allowedUDPPortRanges = [ ];
    
 
   };
