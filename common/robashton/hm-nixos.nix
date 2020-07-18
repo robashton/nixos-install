@@ -9,6 +9,8 @@ in
   };
 
   home.packages = (with pkgs; [
+    vscode
+
     ktouch
     spotify
     playerctl

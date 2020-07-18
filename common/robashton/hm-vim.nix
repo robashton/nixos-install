@@ -257,6 +257,17 @@ let
     };
   };
 
+  customPlugins.vim-lsp-settings = pkgs.vimUtils.buildVimPlugin {
+    name = "vim-lsp-settings";
+    configurePhase = ''
+      rm -rf Makefile test 
+    '';
+    src = pkgs.fetchurl {
+      url = "https://github.com/robashton/vim-lsp-settings/archive/3217b5c0636153177b0af8d8d655233196bca2ea.tar.gz";
+      sha256 = "187r1cz6mvw6wxa89jgrfdk1qfdw7s5wha7vapxqp4wcmhdhiz5p";
+    };
+  };
+
   customVim = (pkgs.vim_configurable.customize {
         name = "vim";
         vimrcConfig.vam.knownPlugins = customPlugins // pkgs.vimPlugins;
