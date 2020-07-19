@@ -163,13 +163,6 @@ let
       sha256 = "173n58jg3ppskn4vjr4ddvx13f26789fwa2g02rpngwl6kdq4150"; 
     }; 
   }; 
-  customPlugins.erlang-motions-vim = pkgs.vimUtils.buildVimPlugin { 
-    name = "erlang-motions-vim";
-    src = pkgs.fetchurl { 
-      url = "https://github.com/edkolev/erlang-motions.vim/archive/e2eca9762b2071437ee7cb15aa774b569c9bbf43.tar.gz"; 
-      sha256 = "1av1xfll2gbgpqbhsa54a2kndcm5k7rrbs8g4m521360i3d1cvvr"; 
-    }; 
-  }; 
   customPlugins.ghcmod-vim = pkgs.vimUtils.buildVimPlugin { 
     name = "ghcmod-vim";
     src = pkgs.fetchurl { 
@@ -198,29 +191,6 @@ let
       sha256 = "10gmz5qxsapvpvydybsx52x0lskc5bl5yil0cf36hb3kbfc2ryrj"; 
     }; 
   }; 
-
-  customPlugins.vim-erlang-runtime = pkgs.vimUtils.buildVimPlugin { 
-    name = "vim-erlang-runtime";
-    src = pkgs.fetchurl { 
-      url = "https://github.com/vim-erlang/vim-erlang-runtime/archive/bba638c6ff658201fd6cd3cacc96cd4c7f63258c.tar.gz"; 
-      sha256 = "0cdbm3g5yjm0r8fwkqczdk653d7byd7x7zhrajn6z05bs4h76ifb"; 
-    }; 
-  }; 
-  customPlugins.vim-erlang-tags = pkgs.vimUtils.buildVimPlugin { 
-    name = "vim-erlang-tags";
-    src = pkgs.fetchurl { 
-      url = "https://github.com/vim-erlang/vim-erlang-tags/archive/4b332f438776058894b065121d0c0e9f2c8b2130.tar.gz"; 
-      sha256 = "0z0ymwwr37fdx0cxsamv68076f0a5842xfgj5z44mriisyiirw5p"; 
-    }; 
-  }; 
-  customPlugins.vim-erlang-compiler = pkgs.vimUtils.buildVimPlugin { 
-    name = "vim-erlang-compiler";
-    src = pkgs.fetchurl { 
-      url = "https://github.com/vim-erlang/vim-erlang-compiler/archive/7ca6f2a9ed97a41891bc48cfb798efc51d240cc0.tar.gz"; 
-      sha256 = "0vn860nx1j7hdpqn3csdwz7lfqjplkih96ym9rvh7ipzy4g5m63d"; 
-    }; 
-  }; 
-
   customPlugins.elm-vim = pkgs.vimUtils.buildVimPlugin { 
     name = "elm-vim";
     src = pkgs.fetchurl { 
@@ -303,12 +273,6 @@ let
             "neco-ghc"
             "haskell-vim"
             "vimproc-vim"
-
-#            "erlang-motions-vim"
-#            "vim-erlang-runtime"
-#            "vim-erlang-tags"
-#            "vim-erlang-compiler"
-
             "elm-vim"
             "vim-colorschemes"
             "purescript-vim"
