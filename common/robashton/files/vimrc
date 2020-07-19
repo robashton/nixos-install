@@ -57,22 +57,21 @@ nnoremap bn :bn<cr>
 nnoremap bl :bp<cr>
 
 autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
-"autocmd FileType purs setlocal omnifunc=syntaxcomplete#Complete
 
-
-"autocmd CursorHold * exe printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\'))
-
-autocmd BufRead *.dtl set ft=htmldjango
-"autocmd BufWritePost *.hs :GhciFile
-autocmd BufWritePost *.elm :ElmFormat
-
-
-autocmd FileType cs nnoremap gd :OmniSharpGotoDefinition<cr>
-autocmd CursorHold *.cs call OmniSharp#TypeLookup()
-set updatetime=500
-set cmdheight=1
-
-autocmd FileType qf setlocal wrap
+"
+""autocmd CursorHold * exe printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\'))
+"
+"autocmd BufRead *.dtl set ft=htmldjango
+""autocmd BufWritePost *.hs :GhciFile
+"autocmd BufWritePost *.elm :ElmFormat
+"
+"
+"autocmd FileType cs nnoremap gd :OmniSharpGotoDefinition<cr>
+"autocmd CursorHold *.cs call OmniSharp#TypeLookup()
+"set updatetime=500
+"set cmdheight=1
+"
+"autocmd FileType qf setlocal wrap
 
 "
 autocmd FileType cs nnoremap <space> :OmniSharpGetCodeActions<cr>
@@ -260,6 +259,28 @@ if executable('purescript-language-server')
       \   }
       \ })
 endif
+
+if executable('erlang_ls')
+    au User lsp_setup call lsp#register_server({
+      \ 'name': 'erlang-language-server',
+      \ 'cmd': {server_info-> ['erlang_ls', '--transport', 'stdio']},
+		  \ 'root_uri':{server_info->
+      \ lsp#utils#path_to_uri(
+		  \	lsp#utils#find_nearest_parent_file_directory(
+		  \		lsp#utils#get_buffer_path(), ['rebar.config']
+		  \	))},
+      \ 'allowlist': ['erlang'],
+      \ 'workspace_config': { 
+          \'buildCommand': 'rebar3 compile'
+      \   }
+      \ })
+endif
+
+
+autocmd FileType purs setlocal omnifunc=lsp#Complete
+autocmd FileType purs setlocal tagfunc=lsp#tagfunc 
+autocmd FileType erl setlocal omnifunc=lsp#Complete
+autocmd FileType erl setlocal tagfunc=lsp#tagfunc 
 
 function! s:on_lsp_buffer_enabled() abort
     setlocal omnifunc=lsp#complete

@@ -4,12 +4,12 @@ let
   private = import ./private { inherit pkgs; };
 
   # Find an extant release here https://repo.skype.com/deb/pool/main/s/skypeforlinux/
-  skypeforlinux_latest_version = "8.54.0.91";
+  skypeforlinux_latest_version = "8.63.76.43";
   skypeforlinux_latest = pkgs.skypeforlinux.overrideAttrs (oldAttrs: {
     version = skypeforlinux_latest_version;
     src = pkgs.fetchurl {
       url = "https://repo.skype.com/deb/pool/main/s/skypeforlinux/skypeforlinux_${skypeforlinux_latest_version}_amd64.deb";
-      sha256 = "1hnha8sqk78zxkjqg62npmg6dymi5fnyj2bmxlwpgi61v3pyxj94";
+      sha256 = "1d2hp3y777y65p40yxaa6xq7sc2cjmgri3074ly55x9y9rqfplna";
     };
   });
 in
@@ -68,8 +68,6 @@ in
     ag
 
     wine
-
-    (steam.override { withPrimus = true; extraPkgs = pkgs: [ bumblebee glxinfo ];  })
 
     okular
     dropbox-cli
@@ -306,6 +304,10 @@ in
 #      "90:class_g *= 'Alacritty'"
     ];
   };
+
+     nixpkgs.config.permittedInsecurePackages = [
+         "google-chrome-81.0.4044.138"
+       ];
 
   # services.xserver.xkbOptions = "eurosign:e";
 

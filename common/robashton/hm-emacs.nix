@@ -48,10 +48,12 @@
         epkgs.melpaPackages.cargo
         epkgs.melpaPackages.toml-mode
 
+        # epkgs.melpaPackages.psc-ide
+        
         # PureScript
         epkgs.melpaPackages.purescript-mode
-        epkgs.melpaPackages.psc-ide
         epkgs.melpaPackages.dhall-mode
+        epkgs.melpaPackages.lsp-mode
 
         # Things Steve has and I don't
         # epkgs.melpaPackages.ace-jump-mode

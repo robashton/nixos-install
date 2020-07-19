@@ -198,6 +198,7 @@ let
       sha256 = "10gmz5qxsapvpvydybsx52x0lskc5bl5yil0cf36hb3kbfc2ryrj"; 
     }; 
   }; 
+
   customPlugins.vim-erlang-runtime = pkgs.vimUtils.buildVimPlugin { 
     name = "vim-erlang-runtime";
     src = pkgs.fetchurl { 
@@ -219,6 +220,7 @@ let
       sha256 = "0vn860nx1j7hdpqn3csdwz7lfqjplkih96ym9rvh7ipzy4g5m63d"; 
     }; 
   }; 
+
   customPlugins.elm-vim = pkgs.vimUtils.buildVimPlugin { 
     name = "elm-vim";
     src = pkgs.fetchurl { 
@@ -297,14 +299,16 @@ let
             "vim-solarized"
             "vim-airline"
             "vim-jsx"
-            "erlang-motions-vim"
             "ghcmod-vim"
             "neco-ghc"
             "haskell-vim"
             "vimproc-vim"
-            "vim-erlang-runtime"
-            "vim-erlang-tags"
-            "vim-erlang-compiler"
+
+#            "erlang-motions-vim"
+#            "vim-erlang-runtime"
+#            "vim-erlang-tags"
+#            "vim-erlang-compiler"
+
             "elm-vim"
             "vim-colorschemes"
             "purescript-vim"

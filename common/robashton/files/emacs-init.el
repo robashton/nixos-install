@@ -73,12 +73,12 @@
 ;; Stop EDTS complaining about the fact that it's being loaded directly
 (setq edts-inhibit-package-check t)
 
-;; Load it
-(if (locate-file "erl" exec-path)
-  (use-package edts-start
-               :load-path "stears/edts" ;; Relative to emacs.d/
-               )
-  )
+;;;; Load it
+;;(if (locate-file "erl" exec-path)
+;;  (use-package edts-start
+;;               :load-path "robashton/edts" ;; Relative to emacs.d/
+;;               )
+;;  )
 
 (add-hook 'erlang-mode-hook
 	  (lambda ()
@@ -108,22 +108,25 @@
 ;; -----------------------------------------------------------------------------
 ;; Purescript
 ;; -----------------------------------------------------------------------------
+;; (use-package psc-ide)
+
 (use-package purescript-mode)
-(use-package psc-ide)
 (use-package dhall-mode)
+(use-package lsp-mode)
+
+(add-hook 'purescript-mode-hook #'lsp)
 
 (add-hook
   'purescript-mode-hook
   (lambda ()
-    (psc-ide-mode)
     (company-mode)
     ;;(flycheck-mode)
     (turn-on-purescript-indentation)))
 
-(add-hook 'psc-ide-mode-hook
-	  (lambda ()
-	    (define-key evil-normal-state-local-map (kbd "C-]") 'psc-ide-goto-definition)
-	    (define-key evil-insert-state-local-map (kbd "C-]") 'psc-ide-goto-definition)))
+;;(add-hook 'psc-ide-mode-hook
+;;	  (lambda ()
+;;	    (define-key evil-normal-state-local-map (kbd "C-]") 'psc-ide-goto-definition)
+;;	    (define-key evil-insert-state-local-map (kbd "C-]") 'psc-ide-goto-definition)))
 
 ;; -----------------------------------------------------------------------------
 ;; Indentation Settings
