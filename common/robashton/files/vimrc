@@ -242,10 +242,10 @@ endif
 
 autocmd BufRead * call Presentation()
   
-if executable('purescript-language-server')
+if executable('psls-wrapper')
     au User lsp_setup call lsp#register_server({
       \ 'name': 'purescript-language-server',
-      \ 'cmd': {server_info-> ['purescript-language-server', '--stdio']},
+      \ 'cmd': {server_info-> ['psls-wrapper', lsp#utils#uri_to_path((server_info['root_uri'])(server_info))]}, 
 		  \ 'root_uri':{server_info->
       \ lsp#utils#path_to_uri(
 		  \	lsp#utils#find_nearest_parent_file_directory(
@@ -253,10 +253,12 @@ if executable('purescript-language-server')
 		  \	))},
       \ 'allowlist': ['purescript'],
       \ 'workspace_config': { 
-          \'addSpagoSources': v:true,
-          \'codegenTargets': [ 'corefn' ],
-          \'buildCommand': 'spago build --purs-args --json-errors'
-      \   }
+          \'purescript': {
+            \'addSpagoSources': v:true,
+            \'codegenTargets': [ 'corefn' ],
+            \'buildCommand': 'spago build --purs-args --json-errors'
+          \}
+      \ }
       \ })
 endif
 
@@ -282,6 +284,17 @@ autocmd FileType purs setlocal tagfunc=lsp#tagfunc
 autocmd FileType erl setlocal omnifunc=lsp#Complete
 autocmd FileType erl setlocal tagfunc=lsp#tagfunc 
 
+autocmd CursorHold *.erl :LspHover
+autocmd CursorHold *.purs :LspHover
+
+"autocmd BufWritePost *.erl :LspDocumentDiagnostics
+"autocmd BufWritePost *.purs :LspDocumentDiagnostics
+
+""autocmd CursorHold * exe printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\'))
+"
+"autocmd BufRead *.dtl set ft=htmldjango
+"autocmd BufWritePost *.elm :ElmFormat
+
 function! s:on_lsp_buffer_enabled() abort
     setlocal omnifunc=lsp#complete
     setlocal signcolumn=yes
@@ -294,3 +307,8 @@ augroup lsp_install
 augroup END
 
 let g:lsp_highlight_references_enabled = 1
+let g:lsp_log_verbose = 1
+let g:lsp_log_file = expand('~/vim-lsp.log')
+
+
+

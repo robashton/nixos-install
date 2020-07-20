@@ -167,6 +167,13 @@ in
       tmux -S /var/tmux/$1 attach -t $1
     ''
     )
+
+    ( writeScriptBin "psls-wrapper" ''
+      #!${pkgs.bash}/bin/bash
+      cd $1
+      purescript-language-server --stdio
+    ''
+    )
   ];
 
 
