@@ -104,6 +104,8 @@ in
     docker-gc
     docker-ls
 
+    obs-studio
+
     # General web things
     firefox-bin
     google-chrome
@@ -302,7 +304,7 @@ in
   services.compton = {
     vSync           = true;
     backend         = "glx";
-    enable          = false;
+    enable          = true;
     fade            = false;
     shadow          = false;
     # inactiveOpacity = "0.9";
