@@ -57,22 +57,21 @@ nnoremap bn :bn<cr>
 nnoremap bl :bp<cr>
 
 autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
-"autocmd FileType purs setlocal omnifunc=syntaxcomplete#Complete
 
-
-"autocmd CursorHold * exe printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\'))
-
-autocmd BufRead *.dtl set ft=htmldjango
-"autocmd BufWritePost *.hs :GhciFile
-autocmd BufWritePost *.elm :ElmFormat
-
-
-autocmd FileType cs nnoremap gd :OmniSharpGotoDefinition<cr>
-autocmd CursorHold *.cs call OmniSharp#TypeLookup()
-set updatetime=500
-set cmdheight=1
-
-autocmd FileType qf setlocal wrap
+"
+""autocmd CursorHold * exe printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\'))
+"
+"autocmd BufRead *.dtl set ft=htmldjango
+""autocmd BufWritePost *.hs :GhciFile
+"autocmd BufWritePost *.elm :ElmFormat
+"
+"
+"autocmd FileType cs nnoremap gd :OmniSharpGotoDefinition<cr>
+"autocmd CursorHold *.cs call OmniSharp#TypeLookup()
+"set updatetime=500
+"set cmdheight=1
+"
+"autocmd FileType qf setlocal wrap
 
 "
 autocmd FileType cs nnoremap <space> :OmniSharpGetCodeActions<cr>
@@ -243,3 +242,73 @@ endif
 
 autocmd BufRead * call Presentation()
   
+if executable('psls-wrapper')
+    au User lsp_setup call lsp#register_server({
+      \ 'name': 'purescript-language-server',
+      \ 'cmd': {server_info-> ['psls-wrapper', lsp#utils#uri_to_path((server_info['root_uri'])(server_info))]}, 
+		  \ 'root_uri':{server_info->
+      \ lsp#utils#path_to_uri(
+		  \	lsp#utils#find_nearest_parent_file_directory(
+		  \		lsp#utils#get_buffer_path(), ['spago.dhall']
+		  \	))},
+      \ 'allowlist': ['purescript'],
+      \ 'workspace_config': { 
+          \'purescript': {
+            \'addSpagoSources': v:true,
+            \'codegenTargets': [ 'corefn' ],
+            \'buildCommand': 'spago build --purs-args --json-errors'
+          \}
+      \ }
+      \ })
+endif
+
+if executable('erlang_ls')
+    au User lsp_setup call lsp#register_server({
+      \ 'name': 'erlang-language-server',
+      \ 'cmd': {server_info-> ['erlang_ls', '--transport', 'stdio']},
+		  \ 'root_uri':{server_info->
+      \ lsp#utils#path_to_uri(
+		  \	lsp#utils#find_nearest_parent_file_directory(
+		  \		lsp#utils#get_buffer_path(), ['rebar.config']
+		  \	))},
+      \ 'allowlist': ['erlang'],
+      \ 'workspace_config': { 
+          \'buildCommand': 'rebar3 compile'
+      \   }
+      \ })
+endif
+
+
+autocmd FileType purs setlocal omnifunc=lsp#Complete
+autocmd FileType purs setlocal tagfunc=lsp#tagfunc 
+autocmd FileType erl setlocal omnifunc=lsp#Complete
+autocmd FileType erl setlocal tagfunc=lsp#tagfunc 
+
+autocmd CursorHold *.erl :LspHover
+autocmd CursorHold *.purs :LspHover
+
+"autocmd BufWritePost *.erl :LspDocumentDiagnostics
+"autocmd BufWritePost *.purs :LspDocumentDiagnostics
+
+""autocmd CursorHold * exe printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\'))
+"
+"autocmd BufRead *.dtl set ft=htmldjango
+"autocmd BufWritePost *.elm :ElmFormat
+
+function! s:on_lsp_buffer_enabled() abort
+    setlocal omnifunc=lsp#complete
+    setlocal signcolumn=yes
+    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+endfunction
+
+augroup lsp_install
+    au!
+    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup END
+
+let g:lsp_highlight_references_enabled = 1
+let g:lsp_log_verbose = 1
+let g:lsp_log_file = expand('~/vim-lsp.log')
+
+
+

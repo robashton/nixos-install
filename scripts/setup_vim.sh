@@ -60,4 +60,6 @@ echo $NAMES
 #install_plugin "https://github.com/ElmCast/elm-vim.git" "elm-vim"
 #install_plugin "https://github.com/raichoo/purescript-vim.git" "purescript-vim"
 #install_plugin "https://github.com/flazz/vim-colorschemes.git" "vim-colorschemes" 
-install_plugin "https://github.com/FrigoEU/psc-ide-vim.git" "vim-psc-ide" 
+#install_plugin "https://github.com/FrigoEU/psc-ide-vim.git" "vim-psc-ide" 
+#install_plugin "https://github.com/prabirshrestha/vim-lsp.git" "vim-lsp" 
+install_plugin "https://github.com/robashton/vim-lsp-settings.git" "vim-lsp-settings" 

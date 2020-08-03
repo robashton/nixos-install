@@ -9,6 +9,8 @@ in
   };
 
   home.packages = (with pkgs; [
+    vscode
+
     ktouch
     spotify
     playerctl
@@ -23,8 +25,8 @@ in
     vlc
     sox
     audacity
-    linphone
-    ekiga
+    #linphone
+    #ekiga
 
     okular
 

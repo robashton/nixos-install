@@ -163,13 +163,6 @@ let
       sha256 = "173n58jg3ppskn4vjr4ddvx13f26789fwa2g02rpngwl6kdq4150"; 
     }; 
   }; 
-  customPlugins.erlang-motions-vim = pkgs.vimUtils.buildVimPlugin { 
-    name = "erlang-motions-vim";
-    src = pkgs.fetchurl { 
-      url = "https://github.com/edkolev/erlang-motions.vim/archive/e2eca9762b2071437ee7cb15aa774b569c9bbf43.tar.gz"; 
-      sha256 = "1av1xfll2gbgpqbhsa54a2kndcm5k7rrbs8g4m521360i3d1cvvr"; 
-    }; 
-  }; 
   customPlugins.ghcmod-vim = pkgs.vimUtils.buildVimPlugin { 
     name = "ghcmod-vim";
     src = pkgs.fetchurl { 
@@ -196,27 +189,6 @@ let
     src = pkgs.fetchurl { 
       url = "https://github.com/Shougo/vimproc.vim/archive/47b54dd23eeb0a7fa81529d3768b27b979821b30.tar.gz"; 
       sha256 = "10gmz5qxsapvpvydybsx52x0lskc5bl5yil0cf36hb3kbfc2ryrj"; 
-    }; 
-  }; 
-  customPlugins.vim-erlang-runtime = pkgs.vimUtils.buildVimPlugin { 
-    name = "vim-erlang-runtime";
-    src = pkgs.fetchurl { 
-      url = "https://github.com/vim-erlang/vim-erlang-runtime/archive/bba638c6ff658201fd6cd3cacc96cd4c7f63258c.tar.gz"; 
-      sha256 = "0cdbm3g5yjm0r8fwkqczdk653d7byd7x7zhrajn6z05bs4h76ifb"; 
-    }; 
-  }; 
-  customPlugins.vim-erlang-tags = pkgs.vimUtils.buildVimPlugin { 
-    name = "vim-erlang-tags";
-    src = pkgs.fetchurl { 
-      url = "https://github.com/vim-erlang/vim-erlang-tags/archive/4b332f438776058894b065121d0c0e9f2c8b2130.tar.gz"; 
-      sha256 = "0z0ymwwr37fdx0cxsamv68076f0a5842xfgj5z44mriisyiirw5p"; 
-    }; 
-  }; 
-  customPlugins.vim-erlang-compiler = pkgs.vimUtils.buildVimPlugin { 
-    name = "vim-erlang-compiler";
-    src = pkgs.fetchurl { 
-      url = "https://github.com/vim-erlang/vim-erlang-compiler/archive/7ca6f2a9ed97a41891bc48cfb798efc51d240cc0.tar.gz"; 
-      sha256 = "0vn860nx1j7hdpqn3csdwz7lfqjplkih96ym9rvh7ipzy4g5m63d"; 
     }; 
   }; 
   customPlugins.elm-vim = pkgs.vimUtils.buildVimPlugin { 
@@ -249,6 +221,25 @@ let
     };
   };
 
+  customPlugins.vim-lsp = pkgs.vimUtils.buildVimPlugin {
+    name = "vim-lsp";
+    src = pkgs.fetchurl {
+      url = "https://github.com/prabirshrestha/vim-lsp/archive/bb765bb7aff26ef4d71cc28de2b57b730c3d4482.tar.gz";
+      sha256 = "1cb6s6pc5krlvvj8mkp54wz3i3hqra22bjdcvn1nk9fhf5hn65jd";
+    };
+  };
+
+  customPlugins.vim-lsp-settings = pkgs.vimUtils.buildVimPlugin {
+    name = "vim-lsp-settings";
+    configurePhase = ''
+      rm -rf Makefile test 
+    '';
+    src = pkgs.fetchurl {
+      url = "https://github.com/robashton/vim-lsp-settings/archive/3217b5c0636153177b0af8d8d655233196bca2ea.tar.gz";
+      sha256 = "187r1cz6mvw6wxa89jgrfdk1qfdw7s5wha7vapxqp4wcmhdhiz5p";
+    };
+  };
+
   customVim = (pkgs.vim_configurable.customize {
         name = "vim";
         vimrcConfig.vam.knownPlugins = customPlugins // pkgs.vimPlugins;
@@ -278,18 +269,14 @@ let
             "vim-solarized"
             "vim-airline"
             "vim-jsx"
-            "erlang-motions-vim"
             "ghcmod-vim"
             "neco-ghc"
             "haskell-vim"
             "vimproc-vim"
-            "vim-erlang-runtime"
-            "vim-erlang-tags"
-            "vim-erlang-compiler"
             "elm-vim"
-            "purescript-vim"
             "vim-colorschemes"
-            "vim-psc-ide"
+            "purescript-vim"
+            "vim-lsp"
             ]; }
         ];
       });
