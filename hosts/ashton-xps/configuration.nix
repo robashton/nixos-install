@@ -5,7 +5,15 @@
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
 { config, pkgs, ... }:
-
+let
+    nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
+    export __NV_PRIME_RENDER_OFFLOAD=1
+    export __NV_PRIME_RENDER_OFFLOAD_PROVIDER=NVIDIA-G0
+    export __GLX_VENDOR_LIBRARY_NAME=nvidia
+    export __VK_LAYER_NV_optimus=NVIDIA_only
+    exec -a "$0" "$@"
+  '';
+in
 {
   imports =
     [ # Include the results of the hardware scan.
@@ -30,7 +38,9 @@
   services.xserver.autorun = true; 
   services.xserver.xkbOptions = "ctrl:swapcaps";
 #  services.xserver.synaptics.enable = true;
-  services.xserver.videoDrivers = [ "intel" "modesetting" ];
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  boot.kernelModules = [ "nvidia-uvm" "nvidia-drm" ];
 
   boot.blacklistedKernelModules = [ "nouveau" ];
 
@@ -38,26 +48,26 @@
 #    options bbswitch load_state=-1 unload_state=1
 #    '';
 
-  #hardware.nvidia.modesetting.enable = true;
-  #hardware.nvidia.optimus_prime.enable = true;
-  #hardware.nvidia.optimus_prime.nvidiaBusId = "PCI:1:0:0";
-  #hardware.nvidia.optimus_prime.intelBusId = "PCI:0:2:0";
+  hardware.nvidia.modesetting.enable = true;
+  hardware.nvidia.prime.offload.enable = true;
+  hardware.nvidia.prime.nvidiaBusId = "PCI:1:0:0";
+  hardware.nvidia.nvidiaPersistenced = true;
+  hardware.nvidia.prime.intelBusId = "PCI:0:2:0";
 
   environment.systemPackages = with pkgs; [
+    nvidia-offload
     xorg.xbacklight
-    bumblebee
+    #bumblebee
     powertop
     pmutils
+    linuxPackages.nvidia_x11
+    vdpauinfo
   ];
 
-  boot.kernelParams = [ "acpi_osi=!" "acpi_osi=\"Windows 2009\""];
-  hardware.bumblebee.enable = true;
- # hardware.bumblebee.group = "video";
- # hardware.bumblebee.pmMethod = "bbswitch";
- # hardware.bumblebee.connectDisplay = true;
+  boot.kernelParams = [ "acpi_osi=Linux" ]; # "acpi_osi=\"Windows 2009\""];  
 
   services.xserver.libinput.enable = true;
-  services.xserver.libinput.clickMethod = "buttonareas";
+  #services.xserver.libinput.clickMethod = "buttonareas";
   services.xserver.libinput.tapping = true;
   services.xserver.libinput.disableWhileTyping = true;
   services.xserver.layout = "gb";
@@ -86,8 +96,12 @@
   # https://nixos.wiki/wiki/Accelerated_Video_Playback
   hardware.opengl = {
     enable = true;
+    driSupport = true;
+    driSupport32Bit = true;
     extraPackages = with pkgs; [
       vaapiIntel
+      libvdpau-va-gl
+      vaapiVdpau
 #      intel-media-driver
       (pkgs.intel-media-driver.overrideAttrs (oldAttrs: {
         name = "intel-media-driver";

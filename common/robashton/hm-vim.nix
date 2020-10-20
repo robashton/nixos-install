@@ -9,13 +9,6 @@ let
       sha256 = "0naprfh3lbfjxg2yii8xjwqvsypvcfna4aagh6dwpac78jldxlz7"; 
     }; 
   }; 
-  customPlugins.vim-jade = pkgs.vimUtils.buildVimPlugin { 
-    name = "vim-jade";
-    src = pkgs.fetchurl { 
-      url = "https://github.com/digitaltoad/vim-jade/archive/ea39cd942cf3194230cf72bfb838901a5344d3b3.tar.gz"; 
-      sha256 = "0rmghq18jbmvzsbbbz447i8l5gaww0js6z031bglf49iarx73bsl"; 
-    }; 
-  }; 
   customPlugins.vim-stylus = pkgs.vimUtils.buildVimPlugin { 
     name = "vim-stylus";
     src = pkgs.fetchurl { 
@@ -247,7 +240,6 @@ let
         vimrcConfig.vam.pluginDictionaries = [ 
           { names = [
             "vim-coffee-script"
-            "vim-jade"
             "vim-stylus"
             "syntastic"
             "vim-sensible"

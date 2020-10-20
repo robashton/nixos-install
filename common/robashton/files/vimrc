@@ -262,21 +262,21 @@ if executable('purescript-language-server')
       \ })
 endif
 
-"if executable('erlang_ls')
-"    au User lsp_setup call lsp#register_server({
-"      \ 'name': 'erlang-language-server',
-"      \ 'cmd': {server_info-> ['erlang_ls', '--transport', 'stdio']},
-"		  \ 'root_uri':{server_info->
-"      \ lsp#utils#path_to_uri(
-"		  \	lsp#utils#find_nearest_parent_file_directory(
-"		  \		lsp#utils#get_buffer_path(), ['rebar.config']
-"		  \	))},
-"      \ 'allowlist': ['erlang'],
-"      \ 'workspace_config': { 
-"          \'buildCommand': 'rebar3 compile'
-"      \   }
-"      \ })
-"endif
+if executable('erlang_ls')
+    au User lsp_setup call lsp#register_server({
+      \ 'name': 'erlang-language-server',
+      \ 'cmd': {server_info-> ['erlang_ls', '--transport', 'stdio']},
+		  \ 'root_uri':{server_info->
+      \ lsp#utils#path_to_uri(
+		  \	lsp#utils#find_nearest_parent_file_directory(
+		  \		lsp#utils#get_buffer_path(), ['rebar.config']
+		  \	))},
+      \ 'allowlist': ['erlang'],
+      \ 'workspace_config': { 
+          \'buildCommand': 'rebar3 compile'
+      \   }
+      \ })
+endif
 
 
 autocmd FileType purs setlocal omnifunc=lsp#Complete
