@@ -2,7 +2,7 @@
 let
   home-manager = builtins.fetchGit {
     url = "https://github.com/rycee/home-manager.git";
-    rev = "9781f3766de7293a67aa8098edb5dbe367939b36";
+    rev = "690d93c22a8812c303a52786022f3f0441dfd06a";
     ref = "master";
   };
 in

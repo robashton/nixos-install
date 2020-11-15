@@ -73,6 +73,7 @@
     driSupport = true;
     extraPackages = with pkgs; [
       vaapiIntel
+      
 #      intel-media-driver
       (pkgs.intel-media-driver.overrideAttrs (oldAttrs: {
         name = "intel-media-driver";

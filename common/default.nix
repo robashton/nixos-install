@@ -4,12 +4,12 @@ let
   private = import ./private { inherit pkgs; };
 
   # Find an extant release here https://repo.skype.com/deb/pool/main/s/skypeforlinux/
-  skypeforlinux_latest_version = "8.63.76.43";
+  skypeforlinux_latest_version = "8.64.0.81";
   skypeforlinux_latest = pkgs.skypeforlinux.overrideAttrs (oldAttrs: {
     version = skypeforlinux_latest_version;
     src = pkgs.fetchurl {
       url = "https://repo.skype.com/deb/pool/main/s/skypeforlinux/skypeforlinux_${skypeforlinux_latest_version}_amd64.deb";
-      sha256 = "1d2hp3y777y65p40yxaa6xq7sc2cjmgri3074ly55x9y9rqfplna";
+      sha256 = "0p6sp45kabm97p3hp3wp087b3k42m26ji99kzhpsz3n9vzjiczjh";
     };
   });
 in
@@ -69,6 +69,9 @@ in
 
     wine
 
+    nodePackages.purescript-language-server
+    sonic-pi
+
     okular
     dropbox-cli
     pavucontrol
@@ -111,12 +114,13 @@ in
     google-chrome
     skypeforlinux_latest
     slack
+    teams
     zoom-us
 
     # Security
     gnupg
     srm
-    keepassxc
+    #keepassxc
 
     # Desktop Env
     gnome3.dconf 
@@ -126,6 +130,7 @@ in
     dmenu
     xclip
     alacritty
+    termite
     feh
     libreoffice-still
 
