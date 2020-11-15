@@ -250,6 +250,13 @@ in
     };
   };
 
+  systemd.coredump.enable = true;
+  systemd.coredump.extraConfig  = ''
+    Storage=external
+    ProcessSizeMax=20G
+    ExternalSizeMax=20G
+    '';
+
   # Allow docker0 to bypass the firewall
   networking.firewall.extraCommands = ''
     ip46tables -I nixos-fw 1 -i docker0 -j nixos-fw-accept
