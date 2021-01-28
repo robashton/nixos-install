@@ -4,7 +4,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ lib, config, pkgs, ... }:
 
 {
   imports =
@@ -35,23 +35,26 @@
   # Open ports in the firewall.
   networking.firewall.allowPing = true;
   services.xserver.layout = "us";
-  services.xserver.autorun = false; 
-  services.xserver.videoDrivers = [ "amdgpu" ];
+  services.xserver.autorun = false;
+#  services.xserver.videoDrivers = lib.mkForce [];
+#  services.drivers = [
+#    ({ driverName = ''modesetting" BusID "PCI:0:2:0'';
+#    name = "intel";
+#    modules = [pkgs.xorg.xf86videomodesetting];
+#  })
+#  ];
 
-  boot.kernelPatches = [
-    { name = "amdgpu-config";
-      patch = null;
-      extraConfig = ''
-        DRM_AMD_DC_DCN1_0 y
-      '';
-    }
-];
+  services.xserver.videoDrivers = [ "modesetting" ];
+  services.xserver.useGlamor = true;
+
+  boot.kernelModules = [ "intel-drm" ];
 
   networking.firewall = {
     trustedInterfaces = [
-      "arqiva0" "arqiva1" "arqiva2" "arqiva3" "arqiva4" 
-      "perform0" "perform1" "perform2" "perform3" "perform4" 
-      ]; 
+      "arqiva0" "arqiva1" "arqiva2" "arqiva3" "arqiva4"
+      "perform0" "perform1" "perform2" "perform3" "perform4"
+      "dazn0" "dazn1" "dazn2" "dazn3" "dazn4"
+      ];
     allowedTCPPorts = [
       22    # SSH
       8080  # dev
@@ -64,6 +67,10 @@
 
   };
 
+  nixpkgs.config.packageOverrides = pkgs: {
+    vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
+  };
+
 
 
   # VAAPI
@@ -73,7 +80,6 @@
     driSupport = true;
     extraPackages = with pkgs; [
       vaapiIntel
-      
 #      intel-media-driver
       (pkgs.intel-media-driver.overrideAttrs (oldAttrs: {
         name = "intel-media-driver";

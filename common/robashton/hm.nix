@@ -4,11 +4,12 @@ let
   modules = [
     ./hm-nixos.nix
     ./hm-tmux.nix
-    ./hm-vim.nix
+    ./hm-neovim.nix
     ./hm-git.nix
     ./hm-xmonad.nix
     ./hm-direnv.nix
     ./hm-emacs.nix
+    ./hm-wayland.nix
   ];
 
   moduleResults = builtins.map runModule modules;

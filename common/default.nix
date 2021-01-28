@@ -15,7 +15,7 @@ let
 in
 {
   imports =
-    [ 
+    [
       ./robashton
       ./stears
     ];
@@ -70,7 +70,9 @@ in
     wine
 
     nodePackages.purescript-language-server
+
     sonic-pi
+    appimage-run
 
     okular
     dropbox-cli
@@ -94,13 +96,13 @@ in
     jq
     awscli
     unzip
-    dnsutils 
+    dnsutils
     manpages
     pciutils usbutils
     fwupd
     shellcheck
     nixops
-    gccStdenv 
+    gccStdenv
 
     # Docker - until I can obviate it
     docker
@@ -123,7 +125,7 @@ in
     #keepassxc
 
     # Desktop Env
-    gnome3.dconf 
+    gnome3.dconf
     gnome3.dconf-editor
     gnome3.gnome-screenshot
     mate.mate-calc
@@ -133,6 +135,12 @@ in
     termite
     feh
     libreoffice-still
+
+    # Needed for Coc
+    nodejs
+
+    # Wayland stuff
+    wl-clipboard
 
 
     # Hardware Acceleration Utilities
@@ -144,24 +152,24 @@ in
       amixer sget Master | awk -F '[][]' '/.*Left:/ { print $2 }'
     ''
     )
-  
+
     ( writeScriptBin "ra-audio-get-master-status" ''
       #!${pkgs.bash}/bin/bash
       amixer sget Master | awk -F '[][]' '/.*Left:/ { print $4 }'
     ''
     )
-  
+
     ( writeScriptBin "ra-audio-get-capture-volume" ''
        #!${pkgs.bash}/bin/bash
        amixer sget Capture | awk -F '[][]' '/.*Left:/ { print $2 }'
     ''
     )
-  
+
     ( writeScriptBin "ra-audio-get-capture-status" ''
        #!${pkgs.bash}/bin/bash
        amixer sget Capture | awk -F '[][]' '/.*Left:/ { print $4 }'
     ''
-    ) 
+    )
 
     ( writeScriptBin "id3as-tmux-create" ''
       #!${pkgs.bash}/bin/bash
@@ -197,8 +205,29 @@ in
   # And thunderbolt things
   services.hardware.bolt.enable = true;
 
+##  services.jack = {
+##    jackd.enable = true;
+##    alsa.enable = false;
+##    loopback = {
+##      enable = true;
+##    };
+##  };
+
   programs = {
     ssh.startAgent = false;
+
+    sway = {
+      enable = true;
+      wrapperFeatures.gtk = true; # so that gtk works properly
+      extraPackages = with pkgs; [
+        swaylock
+        swayidle
+        wl-clipboard
+        mako # notification daemon
+        alacritty # Alacritty is the default terminal in the config
+        dmenu # Dmenu is the default in the config but i recommend wofi since its wayland native
+      ];
+    };
 
     gnupg.agent = {
       enable = true;
@@ -210,6 +239,7 @@ in
 
     bash = {
       enableCompletion = true;
+      interactiveShellInit = builtins.readFile ./files/bash-prompt.sh;
     };
 
     wireshark = {
@@ -339,5 +369,5 @@ in
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
   # should.
-  system.stateVersion = "19.09"; # Did you read the comment?
+  system.stateVersion = "20.03"; # Did you read the comment?
 }
