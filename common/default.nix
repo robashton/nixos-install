@@ -112,7 +112,7 @@ in
     # General web things
     firefox-bin
     google-chrome
-    skypeforlinux_latest
+    # skypeforlinux_latest
     slack
     teams
     zoom-us

@@ -31,7 +31,9 @@ in
 
   networking.hostName = "ashton-xps";
 
-  boot.loader.grub.device = "/dev/nvme0n1";
+  # Use the systemd-boot EFI boot loader.
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
   
   networking.wireless.enable = true;
 
