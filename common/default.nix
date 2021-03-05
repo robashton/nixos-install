@@ -12,6 +12,11 @@ let
       sha256 = "0p6sp45kabm97p3hp3wp087b3k42m26ji99kzhpsz3n9vzjiczjh";
     };
   });
+
+  discord_latest = pkgs.discord.overrideAttrs (oldArtrs: {
+    src = builtins.fetchTarball "https://dl.discordapp.net/apps/linux/0.0.13/discord-0.0.13.tar.gz";
+  });
+
 in
 {
   imports =
@@ -19,6 +24,7 @@ in
       ./robashton
       ./stears
     ];
+
 
   security.sudo.extraConfig = ''
     %wheel	ALL=(ALL)	NOPASSWD: ALL
@@ -45,6 +51,12 @@ in
 
   nixpkgs.config.allowUnfree = true;
 
+#  nixpkgs.config.packageOverrides = pkgs: {
+#    steam = pkgs.steam.override {
+#      nativeOnly = true;
+#    };
+#  };
+
   environment.interactiveShellInit = ''
     alias vi='vim'
   '';
@@ -60,6 +72,8 @@ in
       };
   };
 
+
+  programs.steam.enable = true;
 
   environment.systemPackages = with pkgs; [
 
@@ -116,6 +130,7 @@ in
     google-chrome
     # skypeforlinux_latest
     slack
+    discord_latest
     teams
     zoom-us
 

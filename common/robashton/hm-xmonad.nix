@@ -9,13 +9,14 @@
         import XMonad.Layout.NoBorders
 
         import XMonad.Hooks.DynamicLog
+        import XMonad.Layout.Fullscreen
 
         import XMonad.Util.EZConfig(additionalKeys)
         import Graphics.X11.ExtraTypes.XF86
 
         main = do
           updatedConfig <-
-            statusBar xmobarPath myPP toggleStrutsKey myConfig
+            statusBar xmobarPath myPP toggleStrutsKey $ fullscreenSupport myConfig
 
           xmonad updatedConfig
 
