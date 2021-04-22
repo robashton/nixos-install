@@ -4,18 +4,25 @@ let
   private = import ./private { inherit pkgs; };
 
   # Find an extant release here https://repo.skype.com/deb/pool/main/s/skypeforlinux/
-  skypeforlinux_latest_version = "8.64.0.81";
+  skypeforlinux_latest_version = "8.69.76.76";
   skypeforlinux_latest = pkgs.skypeforlinux.overrideAttrs (oldAttrs: {
     version = skypeforlinux_latest_version;
     src = pkgs.fetchurl {
       url = "https://repo.skype.com/deb/pool/main/s/skypeforlinux/skypeforlinux_${skypeforlinux_latest_version}_amd64.deb";
-      sha256 = "0p6sp45kabm97p3hp3wp087b3k42m26ji99kzhpsz3n9vzjiczjh";
+      sha256 = "1i33vdh49m26da76wz1ghp03pgvgln61izd7aqchd4q9jifjw61h";
     };
   });
 
   discord_latest = pkgs.discord.overrideAttrs (oldArtrs: {
     src = builtins.fetchTarball "https://dl.discordapp.net/apps/linux/0.0.14/discord-0.0.14.tar.gz";
   });
+
+  pls = pkgs.nodePackages.purescript-language-server.override {
+    version = "0.15.0";
+    src = builtins.fetchurl {
+      url = "https://registry.npmjs.org/purescript-language-server/-/purescript-language-server-0.15.0.tgz";
+    };
+  };
 
 in
 {
@@ -83,7 +90,6 @@ in
 
     wine
 
-    nodePackages.purescript-language-server
 
     sonic-pi
     appimage-run
