@@ -14,7 +14,7 @@ let
   });
 
   discord_latest = pkgs.discord.overrideAttrs (oldArtrs: {
-    src = builtins.fetchTarball "https://dl.discordapp.net/apps/linux/0.0.13/discord-0.0.13.tar.gz";
+    src = builtins.fetchTarball "https://dl.discordapp.net/apps/linux/0.0.14/discord-0.0.14.tar.gz";
   });
 
 in
