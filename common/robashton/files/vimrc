@@ -52,11 +52,16 @@ if executable('ag')
 endif
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*/vendor/*,*/\.git/*,*.d,*.beam
 
+let g:gutentags_exclude_filetypes=["purescript"]
+let g:purescript_disable_indent = 1
+
 
 nnoremap bn :bn<cr>
 nnoremap bl :bp<cr>
 
 autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
+
+autocmd FileType purs setlocal noai nocin nosi inde=
 
 "
 ""autocmd CursorHold * exe printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\'))
@@ -64,6 +69,7 @@ autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
 "autocmd BufRead *.dtl set ft=htmldjango
 ""autocmd BufWritePost *.hs :GhciFile
 "autocmd BufWritePost *.elm :ElmFormat
+autocmd BufWritePost *.purs :Format
 "
 "
 "autocmd FileType cs nnoremap gd :OmniSharpGotoDefinition<cr>
@@ -201,9 +207,6 @@ set guioptions-=m
 set guioptions-=T
 "set guiheadroom=0
 set guifont=Cascadia\ Code\ 10
-
-" Search for the tags from home onwards (so I can work in child dirs)
-set tags+=$HOME
 
 " Disable the mouse as much as we can
 noremap <ScrollWheelUp>      <nop>
@@ -452,6 +455,8 @@ set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 " Mappings for CoCList
 " Show all diagnostics.
 nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
+
+nnoremap <silent><nowait> <space>t  :<C-u>CocAction<cr>
 " Manage extensions.
 nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
 " Show commands.
