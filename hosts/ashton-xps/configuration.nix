@@ -34,10 +34,17 @@ in
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-  
+
+  networking.interfaces.enp56s0u2.useDHCP = false;
+  networking.interfaces.enp56s0u2.ipv4.addresses = [ {
+    address = "192.168.20.101";
+    prefixLength = 24;
+  } ];
+
+
   networking.wireless.enable = true;
 
-  services.xserver.autorun = true; 
+  services.xserver.autorun = true;
   services.xserver.xkbOptions = "ctrl:swapcaps";
 #  services.xserver.synaptics.enable = true;
   services.xserver.videoDrivers = [ "nvidia" ];
@@ -66,7 +73,7 @@ in
     vdpauinfo
   ];
 
-  boot.kernelParams = [ "acpi_osi=Linux" ]; # "acpi_osi=\"Windows 2009\""];  
+  boot.kernelParams = [ "acpi_osi=Linux" "net.naming-scheme=v239" ];  # "acpi_osi=\"Windows 2009\""];
 
   services.xserver.libinput.enable = true;
   #services.xserver.libinput.clickMethod = "buttonareas";
@@ -79,9 +86,9 @@ in
 
   networking.firewall = {
     trustedInterfaces = [
-      "arqiva0" "arqiva1" "arqiva2" "arqiva3" "arqiva4" 
-      "perform0" "perform1" "perform2" "perform3" "perform4" 
-    ]; 
+      "arqiva0" "arqiva1" "arqiva2" "arqiva3" "arqiva4"
+      "perform0" "perform1" "perform2" "perform3" "perform4"
+    ];
     allowedTCPPorts = [
       22    # SSH
       8080  # dev
@@ -90,7 +97,7 @@ in
     allowedUDPPorts = [32005];
 
     allowedUDPPortRanges = [ ];
-   
+
 
   };
 
