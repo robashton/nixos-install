@@ -158,7 +158,7 @@ in
     libreoffice-still
 
     # Needed for Coc
-    nodejs
+    nodejs-14_x
 
     # Wayland stuff
     wl-clipboard

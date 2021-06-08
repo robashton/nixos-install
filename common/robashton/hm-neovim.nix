@@ -24,7 +24,7 @@ in
       standardPlugins.vim-fugitive
       standardPlugins.vim-airline
       standardPlugins.tagbar
-      standardPlugins.vim-gutentags
+#      standardPlugins.vim-gutentags
 
       # Specific Languages
       customPlugins.elm-vim
