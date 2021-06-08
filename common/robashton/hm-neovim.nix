@@ -25,6 +25,7 @@ in
       standardPlugins.vim-airline
       standardPlugins.tagbar
 #      standardPlugins.vim-gutentags
+      standardPlugins.indentLine
 
       # Specific Languages
       customPlugins.elm-vim

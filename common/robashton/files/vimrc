@@ -27,13 +27,9 @@ aug QFClose
     au WinEnter * if winnr('$') == 1 && getbufvar(winbufnr(winnr()), "&buftype") == "quickfix"|q|endif
 aug END
 
-" Gnome terminal supports 256 colours
-" So enable it if we want
-if $COLORTERM == 'gnome-terminal'
-  set t_Co=256 " For tomorrow-night
-  "set t_Co=16 " For solarized
+if has('termguicolors')
+  set termguicolors
 endif
-
 
 
 "set completeopt=longest,menuone

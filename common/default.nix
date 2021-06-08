@@ -14,7 +14,7 @@ let
   });
 
   discord_latest = pkgs.discord.overrideAttrs (oldArtrs: {
-    src = builtins.fetchTarball "https://dl.discordapp.net/apps/linux/0.0.14/discord-0.0.14.tar.gz";
+    src = builtins.fetchTarball "https://dl.discordapp.net/apps/linux/0.0.15/discord-0.0.15.tar.gz";
   });
 
   pls = pkgs.nodePackages.purescript-language-server.override {
@@ -134,7 +134,7 @@ in
     # General web things
     firefox-bin
     google-chrome
-    skypeforlinux_latest
+    # skypeforlinux_latest
     slack
     discord_latest
     teams
