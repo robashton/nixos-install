@@ -65,8 +65,9 @@ autocmd FileType purs setlocal noai nocin nosi inde=
 "autocmd BufRead *.dtl set ft=htmldjango
 ""autocmd BufWritePost *.hs :GhciFile
 "autocmd BufWritePost *.elm :ElmFormat
-autocmd BufWritePost *.purs :Format
-"
+autocmd BufWritePre *.purs :call CocAction('format')
+autocmd BufWritePre *.rs :call CocAction('format')
+
 "
 "autocmd FileType cs nnoremap gd :OmniSharpGotoDefinition<cr>
 "autocmd CursorHold *.cs call OmniSharp#TypeLookup()
