@@ -9,20 +9,25 @@ function install_plugin {
   pushd $2 > /dev/null
   local hash=$(git log -n 1 | head -n 1 | grep commit | awk '{print $2}')
   local url=$(echo $1 | sed s/\\.git$//)/archive/$hash.tar.gz
-  local sha256=$(nix-prefetch-url $url 2> /dev/null) 
-  echo "customPlugins.$2 = pkgs.vimUtils.buildVimPlugin { "
-  echo "  name = \"$2\";"
-  echo "  src = pkgs.fetchurl { "
-  echo "    url = \"$url\"; "
-  echo "    sha256 = \"$sha256\"; "
+  local sha256=$(nix-prefetch-url $url 2> /dev/null)
+  echo "  result.$2 = buildVimPlugin { "
+  echo "    name = \"$2\";"
+  echo "    src = fetchurl { "
+  echo "      url = \"$url\"; "
+  echo "      sha256 = \"$sha256\"; "
+  echo "    }; "
   echo "  }; "
-  echo "}; "
   popd > /dev/null
   rm -rf $2 > /dev/null 2>/dev/null
 }
 
 
 echo "{ pkgs }:"
+echo "let"
+echo "  inherit (pkgs) fetchurl;"
+echo "  inherit (pkgs.vimUtils) buildVimPlugin;"
+echo ""
+echo "  result = {};"
 echo ""
 echo $NAMES
 
@@ -59,7 +64,8 @@ install_plugin "https://github.com/vim-erlang/vim-erlang-tags" "vim-erlang-tags"
 install_plugin "https://github.com/vim-erlang/vim-erlang-compiler" "vim-erlang-compiler"
 install_plugin "https://github.com/ElmCast/elm-vim.git" "elm-vim"
 install_plugin "https://github.com/raichoo/purescript-vim.git" "purescript-vim"
-install_plugin "https://github.com/flazz/vim-colorschemes.git" "vim-colorschemes" 
-install_plugin "https://github.com/FrigoEU/psc-ide-vim.git" "vim-psc-ide" 
-install_plugin "https://github.com/prabirshrestha/vim-lsp.git" "vim-lsp" 
-install_plugin "https://github.com/robashton/vim-lsp-settings.git" "vim-lsp-settings" 
+install_plugin "https://github.com/flazz/vim-colorschemes.git" "vim-colorschemes"
+install_plugin "https://github.com/neovim/nvim-lspconfig" "nvim-lspconfig"
+
+echo "in"
+echo "  result"
