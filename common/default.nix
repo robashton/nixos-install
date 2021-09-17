@@ -81,6 +81,9 @@ in
 
 
   programs.steam.enable = true;
+  services.pipewire = {
+    enable = true;
+  };
 
   environment.systemPackages = with pkgs; [
 

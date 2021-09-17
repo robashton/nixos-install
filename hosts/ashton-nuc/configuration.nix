@@ -39,6 +39,9 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
   networking.wireless.enable = true;
 
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
+
   # Open ports in the firewall.
   networking.firewall.allowPing = true;
   services.xserver.layout = "us";
@@ -51,8 +54,8 @@
 #  })
 #  ];
 
-  services.xserver.videoDrivers = [ "modesetting" ];
-  services.xserver.useGlamor = true;
+  services.xserver.videoDrivers = [ "admgpu" ];
+#  services.xserver.useGlamor = true;
 
   boot.kernelModules = [ "intel-drm" ];
 
