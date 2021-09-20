@@ -161,6 +161,7 @@ endif
 
 autocmd BufRead * call Presentation()
 
+
 " load the Lua written by nix config
 source ~/.config/nvim/extra.lua
 
@@ -197,6 +198,7 @@ set shortmess+=c
 " Reserve space for the errors
 set signcolumn=yes
 
-autocmd CursorMoved,InsertLeave,BufEnter,BufWinEnter,TabEnter,BufWritePost *.rs
-\ lua require'lsp_extensions'.inlay_hints{ prefix = '', highlight = "Comment", enabled = {"TypeHint", "ChainingHint", "ParameterHint"} }
+"autocmd CursorMoved,InsertLeave,BufEnter,BufWinEnter,TabEnter,BufWritePost *.rs
+"\ lua require'lsp_extensions'.inlay_hints{ prefix = '', highlight = "Comment", enabled = {"TypeHint", "ChainingHint", "ParameterHint"} }
 
+let g:dap_virtual_text = v:true
