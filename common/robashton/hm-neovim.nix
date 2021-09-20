@@ -53,14 +53,22 @@ in
       standardPlugins.vim-markdown
       standardPlugins.vim-nix
 
-#      standardPlugins.coc-nvim
+      # Generic LSP help
       (plugin "neovim/nvim-lspconfig")
+      (plugin "nvim-lua/lsp_extensions.nvim")
 
+#      # Rusty
+     (plugin "hrsh7th/nvim-cmp")
+     (plugin "hrsh7th/cmp-nvim-lsp")
+     (plugin "hrsh7th/cmp-vsnip")
+     (plugin "hrsh7th/cmp-path")
+     (plugin "hrsh7th/cmp-buffer")
+     (plugin "hrsh7th/vim-vsnip")
 
       # Rust Bits
       #standardPlugins.ale
-      standardPlugins.deoplete-nvim
-      standardPlugins.deoplete-rust
+      #standardPlugins.deoplete-nvim
+      #standardPlugins.deoplete-rust
       standardPlugins.vim-toml
 
       # Colour Schemes
@@ -70,3 +78,5 @@ in
     extraConfig = (builtins.readFile ./files/vimrc);
   };
 }
+
+
