@@ -236,6 +236,8 @@ in
 
   programs = {
     ssh.startAgent = false;
+    ssh.forwardX11 = true;
+    ssh.setXAuthLocation = true;
 
     sway = {
       enable = true;
@@ -274,6 +276,7 @@ in
     passwordAuthentication = false;
     challengeResponseAuthentication = false;
     openFirewall = false;
+    forwardX11 = true;
   };
 
   networking.extraHosts = private.configuration.hosts;
@@ -305,6 +308,7 @@ in
       Nice = 10;
     };
   };
+
 
   systemd.coredump.enable = true;
   systemd.coredump.extraConfig  = ''
