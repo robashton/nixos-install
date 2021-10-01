@@ -70,6 +70,7 @@ in
       standardPlugins.typescript-vim
       standardPlugins.vim-markdown
       standardPlugins.vim-nix
+      (plugin "frazrepo/vim-rainbow")
 
       # Generic LSP help
       (plugin "neovim/nvim-lspconfig")

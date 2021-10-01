@@ -34,8 +34,8 @@ endif
 noremap <Leader>a :Ack <cword><cr> --ignore-dir input
 
 " Purescript indentation does my tit in when trying to write code
-let g:purescript_disable_indent = 1
-autocmd FileType purs setlocal noai nocin nosi inde=
+"let g:purescript_disable_indent = 1
+"autocmd FileType purs setlocal noai nocin nosi inde=
 
 " It's dirty, but this is an easy way to resize my windows
 nnoremap <C-left> :vertical resize -10<cr>
@@ -76,6 +76,17 @@ function! SetDarkTheme()
   highlight StatusLine ctermfg=white ctermbg=darkblue
   highlight StatusLineNC ctermfg=white ctermbg=blue
   highlight Normal ctermbg=none
+
+  highlight link LspDiagnosticsSignError SpellBad
+  highlight link LspDiagnosticsSignWarn SpellCap
+  highlight link LspDiagnosticsSignWarning SpellCap
+  highlight link LspDiagnosticsSignHint SpellCap
+  highlight link LspDiagnosticsSignInfo SpellRare
+
+  hi Pmenu           guifg=#66D9EF guibg=#000000
+  hi PmenuSel                      guibg=#808080
+  hi PmenuSbar                     guibg=#080808
+  hi PmenuThumb      guifg=#66D9EF
 endfunction
 
 " Working outside in the sun
@@ -202,3 +213,6 @@ set signcolumn=yes
 "\ lua require'lsp_extensions'.inlay_hints{ prefix = '', highlight = "Comment", enabled = {"TypeHint", "ChainingHint", "ParameterHint"} }
 
 let g:dap_virtual_text = v:true
+
+
+au FileType rust call rainbow#load()
