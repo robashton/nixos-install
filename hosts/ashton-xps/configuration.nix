@@ -88,10 +88,12 @@ in
     trustedInterfaces = [
       "arqiva0" "arqiva1" "arqiva2" "arqiva3" "arqiva4"
       "perform0" "perform1" "perform2" "perform3" "perform4"
+      "enp56s0u2"
     ];
     allowedTCPPorts = [
       22    # SSH
       8080  # dev
+      3000
     ];
 
     allowedUDPPorts = [32005];
