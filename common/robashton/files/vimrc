@@ -5,107 +5,43 @@ set autoindent
 set relativenumber
 set mouse=
 
-let g:hdevtools_stack = 1
-let g:haddock_browser = 'google-chrome'
-"let g:syntastic_debug=1
-"let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tabline#left_sep = ' '
 let g:airline#extensions#tabline#left_alt_sep = '|'
-
-"Disable syntastic cos vimerl does this better
-let g:syntastic_erlang_checkers = []
-let g:syntastic_javascript_checkers = ['eslint']
-let g:syntastic_haskell_checkers = ['hdevtools']
-
-" Allow project specific defaults (mostly override the above)
-if filereadable(".vim.custom")
-    so .vim.custom
-endif
-
-aug QFClose
-    au!
-    au WinEnter * if winnr('$') == 1 && getbufvar(winbufnr(winnr()), "&buftype") == "quickfix"|q|endif
-aug END
 
 if has('termguicolors')
   set termguicolors
 endif
-
-
-"set completeopt=longest,menuone
 syntax on
 filetype plugin indent on
-let vimclojure#HighlightBuiltins =1
-let vimclojure#ParenRainbow =1
-
-
 set lazyredraw
 
 
+" Fast ctrl-p functionality
 let g:ctrlp_cache_dir = $HOME . '/.cache/ctrlp'
 if executable('ag')
   let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 endif
 set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*/vendor/*,*/\.git/*,*.d,*.beam
 
-let g:gutentags_exclude_filetypes=["purescript"]
-let g:purescript_disable_indent = 1
+" Ditto for ack
+let g:ackprg="ack -H --nocolor --nogroup --column"
+if executable("ag")
+  let g:ackprg="ag --nogroup --nocolor --column"
+  set grepprg=ag\ --noheading\ --nogroup\ --nocolor
+endif
 
+" Search for current symbol with Ack
+noremap <Leader>a :Ack <cword><cr> --ignore-dir input
 
-nnoremap bn :bn<cr>
-nnoremap bl :bp<cr>
-
-autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
-
-autocmd FileType purs setlocal noai nocin nosi inde=
-
-"
-""autocmd CursorHold * exe printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\'))
-"
-"autocmd BufRead *.dtl set ft=htmldjango
-""autocmd BufWritePost *.hs :GhciFile
-"autocmd BufWritePost *.elm :ElmFormat
-autocmd BufWritePre *.purs :call CocAction('format')
-autocmd BufWritePre *.rs :call CocAction('format')
-
-"
-"autocmd FileType cs nnoremap gd :OmniSharpGotoDefinition<cr>
-"autocmd CursorHold *.cs call OmniSharp#TypeLookup()
-"set updatetime=500
-"set cmdheight=1
-"
-"autocmd FileType qf setlocal wrap
-
-"
-autocmd FileType cs nnoremap <space> :OmniSharpGetCodeActions<cr>
-autocmd FileType cs nnoremap <leader>tp :OmniSharpAddToProject<cr>
-autocmd FileType cs nnoremap <leader>ft :OmniSharpFindType<cr>
-
-au FileType haskell nnoremap <buffer> <F1> :HdevtoolsType<CR>
-au FileType haskell nnoremap <buffer> <silent> <F2> :HdevtoolsInfo<CR>
-au FileType haskell nnoremap <buffer> <silent> <F3> :HdevtoolsClear<CR>
-
-"autocmd FileType hs nnoremap <space> :GhcModType<cr>
-
-"autocmd FileType purs nnoremap <space> :GhcModType<cr>
-nnoremap <C-a>a :Papply<cr>
-
-"let g:psc_ide_log_level = 3
-
-
-" Load all the plug-ins
-" call pathogen#infect()
+" Purescript indentation does my tit in when trying to write code
+"let g:purescript_disable_indent = 1
+"autocmd FileType purs setlocal noai nocin nosi inde=
 
 " It's dirty, but this is an easy way to resize my windows
 nnoremap <C-left> :vertical resize -10<cr>
 nnoremap <C-down> :resize +10<cr>
 nnoremap <C-up> :resize -10<cr>
 nnoremap <C-right> :vertical resize +10<cr>
-
-augroup quickfix
-    autocmd!
-    autocmd FileType qf setlocal wrap
-augroup END
 
 " I like a solid line
 set fcs+=vert:│
@@ -121,16 +57,7 @@ set swapfile
 set dir=~/tmp
 set backupdir=~/tmp
 
-
-" Overwrite the ack default to use silversearcher
-let g:ackprg="ack -H --nocolor --nogroup --column"
-if executable("ag")
-  let g:ackprg="ag --nogroup --nocolor --column"
-  set grepprg=ag\ --noheading\ --nogroup\ --nocolor
-endif
-
-" Search for current symbol
-noremap <Leader>a :Ack <cword><cr> --ignore-dir input
+" Seeing as we use this a lot
 map <C-n> :NERDTreeToggle<CR>
 
 " Get rid of default f behaviour
@@ -149,9 +76,20 @@ function! SetDarkTheme()
   highlight StatusLine ctermfg=white ctermbg=darkblue
   highlight StatusLineNC ctermfg=white ctermbg=blue
   highlight Normal ctermbg=none
+
+  highlight link LspDiagnosticsSignError SpellBad
+  highlight link LspDiagnosticsSignWarn SpellCap
+  highlight link LspDiagnosticsSignWarning SpellCap
+  highlight link LspDiagnosticsSignHint SpellCap
+  highlight link LspDiagnosticsSignInfo SpellRare
+
+  hi Pmenu           guifg=#66D9EF guibg=#000000
+  hi PmenuSel                      guibg=#808080
+  hi PmenuSbar                     guibg=#080808
+  hi PmenuThumb      guifg=#66D9EF
 endfunction
 
-" Having a change of scenery
+" Working outside in the sun
 function! SetLightTheme()
   colorscheme default
   highlight NonText ctermfg=black
@@ -185,18 +123,12 @@ function! Presentation()
   endif
 endfunction
 
-" This is a bit cheeky, but it's pretty useful when in Thailand
-function! Daytime()
-  colorscheme default
-  set guifont=Ubuntu\ Mono\ 14
-endfunction
-
 augroup theming
   autocmd!
   autocmd VimEnter * call SetDarkTheme()
 augroup END
 
-" Hide all the GUI if we're in gvim (which is nearly always)
+" Hide all the GUI if we're in gvim (Which these days is never)
 set guioptions+=LlRrb
 set guioptions-=LlRrb
 set guioptions-=M
@@ -226,8 +158,6 @@ if !empty(glob("rebar.config"))
   :set path+=deps/**
 endif
 
-
-
 if !empty(glob(".git"))
   function! GitLsFilesModified(A,L,P)
     let pattern = a:A
@@ -242,229 +172,47 @@ endif
 
 autocmd BufRead * call Presentation()
 
-"if executable('purescript-language-server')
-"    au User lsp_setup call lsp#register_server({
-"      \ 'name': 'purescript-language-server',
-"      \ 'cmd': {server_info-> ['purescript-language-server', '--stdio']},
-"		  \ 'root_uri':{server_info->
-"      \ lsp#utils#path_to_uri(
-"		  \	lsp#utils#find_nearest_parent_file_directory(
-"		  \		lsp#utils#get_buffer_path(), ['spago.dhall']
-"		  \	))},
-"      \ 'allowlist': ['purescript'],
-"      \ 'workspace_config': {
-"          \'purescript': {
-"            \'addSpagoSources': v:true,
-"            \'codegenTargets': [ 'corefn' ],
-"            \'buildCommand': 'spago build --purs-args --json-errors'
-"          \}
-"      \ }
-"      \ })
-"endif
-"
-"if executable('erlang_ls')
-"    au User lsp_setup call lsp#register_server({
-"      \ 'name': 'erlang-language-server',
-"      \ 'cmd': {server_info-> ['erlang_ls', '--transport', 'stdio']},
-"		  \ 'root_uri':{server_info->
-"      \ lsp#utils#path_to_uri(
-"		  \	lsp#utils#find_nearest_parent_file_directory(
-"		  \		lsp#utils#get_buffer_path(), ['rebar.config']
-"		  \	))},
-"      \ 'allowlist': ['erlang'],
-"      \ 'workspace_config': {
-"          \'buildCommand': 'rebar3 compile'
-"      \   }
-"      \ })
-"endif
-"
-"
-"autocmd FileType purs setlocal omnifunc=lsp#Complete
-"autocmd FileType purs setlocal tagfunc=lsp#tagfunc
-"autocmd FileType erl setlocal omnifunc=lsp#Complete
-"autocmd FileType erl setlocal tagfunc=lsp#tagfunc
 
-"autocmd CursorHold *.erl :LspHover
-"autocmd CursorHold *.purs :LspHover
+" load the Lua written by nix config
+source ~/.config/nvim/extra.lua
 
-"autocmd BufWritePost *.erl :LspDocumentDiagnostics
-"autocmd BufWritePost *.purs :LspDocumentDiagnostics
+" The LSP is loaded by lua, configire it here
+" We'd do this in Lua but the API isn't really there
 
-""autocmd CursorHold * exe printf('match IncSearch /\V\<%s\>/', escape(expand('<cword>'), '/\'))
-"
-"autocmd BufRead *.dtl set ft=htmldjango
-"autocmd BufWritePost *.elm :ElmFormat
+" Faster hover
+set updatetime=1000
 
-function! s:on_lsp_buffer_enabled() abort
-    setlocal omnifunc=lsp#complete
-    setlocal signcolumn=yes
-    if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-endfunction
+" Omni everything if we can
+filetype plugin on
 
-augroup lsp_install
-    au!
-    autocmd User lsp_buffer_enabled call s:on_lsp_buffer_enabled()
+augroup AutoActionsLsp
+  autocmd!
+  autocmd BufWritePre * lua vim.lsp.buf.formatting_sync()
 augroup END
 
-let g:lsp_highlight_references_enabled = 1
-let g:lsp_log_verbose = 1
-let g:lsp_log_file = expand('~/vim-lsp.log')
+" Allow project specific defaults (mostly override the above)
+if filereadable(".vim.custom")
+    so .vim.custom
+endif
 
+" Ditto, but in lua
+if filereadable(".vim.lua")
+    so .vim.lua
+endif
 
+" Set completeopt to have a better completion experience
+set completeopt=menuone,noinsert,noselect
 
-" All of this is stolen from the neovim/coc readme
-" and needs going through properly at some point (lol)
-
-" TextEdit might fail if hidden is not set.
-set hidden
-
-" Some servers have issues with backup files, see #649.
-set nobackup
-set nowritebackup
-
-" Give more space for displaying messages.
-set cmdheight=2
-
-" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
-" delays and poor user experience.
-set updatetime=300
-
-" Don't pass messages to |ins-completion-menu|.
+" Avoid showing message extra message when using completion
 set shortmess+=c
 
-" Always show the signcolumn, otherwise it would shift the text each time
-" diagnostics appear/become resolved.
-if has("patch-8.1.1564")
-  " Recently vim can merge signcolumn and number column into one
-  set signcolumn=number
-else
-  set signcolumn=yes
-endif
+" Reserve space for the errors
+set signcolumn=yes
 
-" Use tab for trigger completion with characters ahead and navigate.
-" NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-" other plugin before putting this into your config.
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+"autocmd CursorMoved,InsertLeave,BufEnter,BufWinEnter,TabEnter,BufWritePost *.rs
+"\ lua require'lsp_extensions'.inlay_hints{ prefix = '', highlight = "Comment", enabled = {"TypeHint", "ChainingHint", "ParameterHint"} }
 
-function! s:check_back_space() abort
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
+let g:dap_virtual_text = v:true
 
-" Use <c-space> to trigger completion.
-if has('nvim')
-  inoremap <silent><expr> <c-space> coc#refresh()
-else
-  inoremap <silent><expr> <c-@> coc#refresh()
-endif
 
-" Make <CR> auto-select the first completion item and notify coc.nvim to
-" format on enter, <cr> could be remapped by other vim plugin
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
-" Use `[g` and `]g` to navigate diagnostics
-" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
-" GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
-
-" Use K to show documentation in preview window.
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  elseif (coc#rpc#ready())
-    call CocActionAsync('doHover')
-  else
-    execute '!' . &keywordprg . " " . expand('<cword>')
-  endif
-endfunction
-
-" Highlight the symbol and its references when holding the cursor.
-autocmd CursorHold * silent call CocActionAsync('highlight')
-
-" Symbol renaming.
-nmap <leader>rn <Plug>(coc-rename)
-
-" Formatting selected code.
-xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
-
-augroup mygroup
-  autocmd!
-  " Setup formatexpr specified filetype(s).
-  autocmd FileType typescript,json setl formatexpr=CocAction('formatSelected')
-  " Update signature help on jump placeholder.
-  autocmd User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
-augroup end
-
-" Applying codeAction to the selected region.
-" Example: `<leader>aap` for current paragraph
-xmap <leader>a  <Plug>(coc-codeaction-selected)
-nmap <leader>a  <Plug>(coc-codeaction-selected)
-
-" Remap keys for applying codeAction to the current buffer.
-nmap <leader>ac  <Plug>(coc-codeaction)
-" Apply AutoFix to problem on the current line.
-nmap <leader>qf  <Plug>(coc-fix-current)
-
-" Map function and class text objects
-" NOTE: Requires 'textDocument.documentSymbol' support from the language server.
-xmap if <Plug>(coc-funcobj-i)
-omap if <Plug>(coc-funcobj-i)
-xmap af <Plug>(coc-funcobj-a)
-omap af <Plug>(coc-funcobj-a)
-xmap ic <Plug>(coc-classobj-i)
-omap ic <Plug>(coc-classobj-i)
-xmap ac <Plug>(coc-classobj-a)
-omap ac <Plug>(coc-classobj-a)
-
-" Use CTRL-S for selections ranges.
-" Requires 'textDocument/selectionRange' support of language server.
-nmap <silent> <C-s> <Plug>(coc-range-select)
-xmap <silent> <C-s> <Plug>(coc-range-select)
-
-" Add `:Format` command to format current buffer.
-command! -nargs=0 Format :call CocAction('format')
-
-" Add `:Fold` command to fold current buffer.
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-" Add `:OR` command for organize imports of the current buffer.
-command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
-
-" Add (Neo)Vim's native statusline support.
-" NOTE: Please see `:h coc-status` for integrations with external plugins that
-" provide custom statusline: lightline.vim, vim-airline.
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
-
-" Mappings for CoCList
-" Show all diagnostics.
-nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
-
-nnoremap <silent><nowait> <space>t  :<C-u>CocAction<cr>
-" Manage extensions.
-nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
-" Show commands.
-nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
-" Find symbol of current document.
-nnoremap <silent><nowait> <space>o  :<C-u>CocList outline<cr>
-" Search workspace symbols.
-nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
-" Do default action for next item.
-nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
-" Do default action for previous item.
-nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
-" Resume latest coc list.
-nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
+au FileType rust call rainbow#load()
