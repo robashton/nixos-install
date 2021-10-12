@@ -32,15 +32,15 @@ in
   home.packages = with pkgs; [
     universal-ctags
 
-    ( writeScriptBin "codelldb" ''
-      #!${pkgs.bash}/bin/bash
-      ${nixPackages.vscode-extensions.vadimcn.vscode-lldb}/share/vscode/extensions/vadimcn.vscode-lldb/adapter/.codelldb-wrapped_ \
-      --liblldb ${nixPackages.vscode-extensions.vadimcn.vscode-lldb}/share/vscode/extensions/vadimcn.vscode-lldb/lldb/lib/liblldb.so $@
-    ''
-    )
+#    ( writeScriptBin "codelldb" ''
+#      #!${pkgs.bash}/bin/bash
+#      ${nixPackages.vscode-extensions.vadimcn.vscode-lldb}/share/vscode/extensions/vadimcn.vscode-lldb/adapter/.codelldb-wrapped_ \
+#      --liblldb ${nixPackages.vscode-extensions.vadimcn.vscode-lldb}/share/vscode/extensions/vadimcn.vscode-lldb/lldb/lib/liblldb.so $@
+#    ''
+#    )
   ];
 
-
+ home.file.".config/nvim/codelldb".source  = nixPackages.vscode-extensions.vadimcn.vscode-lldb;
  home.file.".config/nvim/extra.lua".source = ./files/neovim.lua;
 
   programs.neovim = {
@@ -77,7 +77,8 @@ in
       (plugin "nvim-lua/lsp_extensions.nvim")
 
       # More LSP overlay shit (and debug support)
-      (pluginGit "64af19183e51911886f3fc82b23cb2430ababcaf" "robashton/rust-tools.nvim")
+      # (pluginGit "64af19183e51911886f3fc82b23cb2430ababcaf" "robashton/rust-tools.nvim")
+      (plugin "simrat39/rust-tools.nvim")
 
       # Generic debug help tools
       (plugin "nvim-lua/popup.nvim")

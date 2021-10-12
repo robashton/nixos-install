@@ -32,7 +32,13 @@ capabilities.textDocument.completion.completionItem.snippetSupport = true
 --nvim_lsp.rust_analyzer.setup {
 --}
 
+local codelldb_path = "/home/robashton/.config/nvim/codelldb/share/vscode/extensions/vadimcn.vscode-lldb/adapter/.codelldb-wrapped_"
+local liblldb_path = "/home/robashton/.config/nvim/codelldb/share/vscode/extensions/vadimcn.vscode-lldb/lldb/lib/liblldb.so"
+
 local opts = {
+   dap = {
+      adapter = require('rust-tools.dap').get_codelldb_adapter(codelldb_path, liblldb_path)
+    },
     tools = {
         autoSetHints = true,
         hover_with_actions = true,
@@ -89,57 +95,23 @@ require('rust-tools').setup(opts)
 
 require("dapui").setup()
 
-local dap = require('dap')
-
-dap.adapters.lldb = function(callback, config)
-   local stdout = vim.loop.new_pipe(false)
-    local handle
-    local pid_or_err
-    local port = 1337
-    local opts = {
-      stdio = {nil, stdout},
-      args = {"--port", port},
-      detached = true
-    }
-    handle, pid_or_err = vim.loop.spawn("codelldb", opts, function(code)
-      stdout:close()
-      handle:close()
-      if code ~= 0 then
-        print('codelldb exited with code', code)
-      end
-    end)
-    assert(handle, 'Error running codelldb: ' .. tostring(pid_or_err))
-    stdout:read_start(function(err, chunk)
-      assert(not err, err)
-      if chunk then
-        vim.schedule(function()
-          require('dap.repl').append(chunk)
-        end)
-      end
-    end)
-    vim.defer_fn(
-      function()
-        callback({type = "server", host = "127.0.0.1", port = port})
-      end,
-      100)
-end
-
-
-dap.configurations.rust = {
-  {
-    name = "Launch",
-    type = "lldb",
-    request = "launch",
-    program = function()
-      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
-    end,
-    args = {},
-    cwd = '${workspaceFolder}',
-    stopOnEntry = false,
-    sourceLanguages = { "rust" },
-    runInTerminal = false,
-  },
-}
+--local dap = require('dap')
+--
+--dap.configurations.rust = {
+--  {
+--    name = "Launch",
+--    type = "lldb",
+--    request = "launch",
+--    program = function()
+--      return vim.fn.input('Path to executable: ', vim.fn.getcwd() .. '/', 'file')
+--    end,
+--    args = {},
+--    cwd = '${workspaceFolder}',
+--    stopOnEntry = false,
+--    sourceLanguages = { "rust" },
+--    runInTerminal = false,
+--  },
+--}
 
 -- Configure Purescript
 nvim_lsp['purescriptls'].setup {
