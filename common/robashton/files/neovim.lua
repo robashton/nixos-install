@@ -34,8 +34,8 @@ capabilities.textDocument.completion.completionItem.snippetSupport = true
 --nvim_lsp.rust_analyzer.setup {
 --}
 
-local codelldb_path = "/home/robashton/.config/nvim/codelldb/share/vscode/extensions/vadimcn.vscode-lldb/adapter/.codelldb-wrapped_"
-local liblldb_path = "/home/robashton/.config/nvim/codelldb/share/vscode/extensions/vadimcn.vscode-lldb/lldb/lib/liblldb.so"
+local codelldb_path = vim.env.HOME .. "/.config/nvim/codelldb/share/vscode/extensions/vadimcn.vscode-lldb/adapter/.codelldb-wrapped_"
+local liblldb_path = vim.env.HOME .. "/.config/nvim/codelldb/share/vscode/extensions/vadimcn.vscode-lldb/lldb/lib/liblldb.so"
 
 local opts = {
    dap = {
@@ -95,7 +95,7 @@ local opts = {
 
 require('rust-tools').setup(opts)
 
-require("dapui").setup()
+require("dapui").setup({})
 
 --local dap = require('dap')
 --
