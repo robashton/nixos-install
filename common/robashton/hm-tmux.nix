@@ -19,6 +19,12 @@ in
       # The terminal type to surface inside of tmux
       set -g default-terminal "xterm-256color"
 
+      # Sensible window sizing behaviour for pairing
+      set -g window-size smallest
+
+      # I want my system clipboard to be available ffs
+      set-option -g update-environment " DISPLAY"
+
       ${lib.concatStrings (map (x: "run-shell ${x.rtp}\n") tmuxPlugins)}
     '';
 

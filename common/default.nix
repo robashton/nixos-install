@@ -30,6 +30,7 @@ in
     [
       ./robashton
       ./stears
+      ./nicholaw
     ];
 
 
@@ -57,12 +58,6 @@ in
   };
 
   nixpkgs.config.allowUnfree = true;
-
-#  nixpkgs.config.packageOverrides = pkgs: {
-#    steam = pkgs.steam.override {
-#      nativeOnly = true;
-#    };
-#  };
 
   environment.interactiveShellInit = ''
     alias vi='vim'

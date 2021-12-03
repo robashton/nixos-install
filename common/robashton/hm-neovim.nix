@@ -4,7 +4,7 @@ let
   standardPlugins = pkgs.vimPlugins;
   customPlugins = import ./vim-plugins.nix { inherit pkgs; };
 
-  pinnedNixHash = "43152ffb579992dc6e0e55781436711f7bdfab1e";
+    pinnedNixHash = "290ce17b054d0f3f50bd21556e835127d844df44";
 
   pinnedNix =
     builtins.fetchGit {
