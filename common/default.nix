@@ -336,6 +336,12 @@ in
   sound.enable = true;
   hardware.pulseaudio.enable = true;
 
+  # Disable that annoying-as-fuck 'SURELY YOU MUST WANT TO USE HDMI AUDIO NOW YOUR MONITOR IS TURNED ON' behaviour
+  # jfc why is that the default fucking hell no
+  hardware.pulseaudio.extraConfig = "unload-module module-switch-on-port-available";
+
+
+
 
   # Enable the X11 windowing system.
   services.xserver = {
