@@ -82,6 +82,12 @@
     vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
   };
 
+  nix = {
+    package = pkgs.nixFlakes;
+    extraOptions = ''
+      experimental-features = nix-command flakes
+    '';
+   };
 
 
   # VAAPI
@@ -96,7 +102,7 @@
       (pkgs.intel-media-driver.overrideAttrs (oldAttrs: {
         name = "intel-media-driver";
         postFixup = ''
-          patchelf --set-rpath "$(patchelf --print-rpath $out/lib/dri/iHD_drv_video.so):${stdenv.lib.makeLibraryPath [ xorg.libX11  ]}" \
+          patchelf --set-rpath "$(patchelf --print-rpath $out/lib/dri/iHD_drv_video.so):${lib.makeLibraryPath [ xorg.libX11  ]}" \
             $out/lib/dri/iHD_drv_video.so
         '';
       }))

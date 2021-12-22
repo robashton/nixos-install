@@ -4,7 +4,11 @@ let
   standardPlugins = pkgs.vimPlugins;
   customPlugins = import ./vim-plugins.nix { inherit pkgs; };
 
-    pinnedNixHash = "290ce17b054d0f3f50bd21556e835127d844df44";
+  neovim = import (builtins.fetchTarball {
+      url = https://github.com/nix-community/neovim-nightly-overlay/archive/116189ff27ac056faa8ec3f7ecc6dc3f6f565b67.tar.gz;
+    });
+
+  pinnedNixHash = "6c0804f1b0fce6831773f042afcab68df793ecb0";
 
   pinnedNix =
     builtins.fetchGit {
@@ -13,7 +17,12 @@ let
       rev = "${pinnedNixHash}";
     };
 
-  nixPackages = import pinnedNix{};
+  nixPackages = import pinnedNix{ overlays = [
+    neovim
+    ];
+  };
+
+  neovim-nightly = import (builtins.fetchTarball "https://github.com/nix-community/neovim-nightly-overlay/archive/116189ff27ac056faa8ec3f7ecc6dc3f6f565b67.tar.gz") {};
 
   pluginGit = ref: repo: pkgs.vimUtils.buildVimPluginFrom2Nix {
     pname = "${lib.strings.sanitizeDerivationName repo}";
@@ -31,17 +40,9 @@ in
 {
   home.packages = with pkgs; [
     universal-ctags
-
-#    ( writeScriptBin "codelldb" ''
-#      #!${pkgs.bash}/bin/bash
-#      ${nixPackages.vscode-extensions.vadimcn.vscode-lldb}/share/vscode/extensions/vadimcn.vscode-lldb/adapter/.codelldb-wrapped_ \
-#      --liblldb ${nixPackages.vscode-extensions.vadimcn.vscode-lldb}/share/vscode/extensions/vadimcn.vscode-lldb/lldb/lib/liblldb.so $@
-#    ''
-#    )
   ];
 
  home.file.".config/nvim/codelldb".source  = nixPackages.vscode-extensions.vadimcn.vscode-lldb;
- home.file.".config/nvim/extra.lua".source = ./files/neovim.lua;
 
   programs.neovim = {
     enable = true;
