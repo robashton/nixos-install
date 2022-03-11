@@ -4,8 +4,9 @@ let
   standardPlugins = pkgs.vimPlugins;
   customPlugins = import ./vim-plugins.nix { inherit pkgs; };
 
+  # Some version of 0.6 cos 0.7 breaks all our plugins for now
   neovim = import (builtins.fetchTarball {
-      url = https://github.com/nix-community/neovim-nightly-overlay/archive/116189ff27ac056faa8ec3f7ecc6dc3f6f565b67.tar.gz;
+      url = https://github.com/nix-community/neovim-nightly-overlay/archive/ccbfeaac2c0b0cae2ab48a1dca49cba4f4ac9b8c.tar.gz;
     });
 
   pinnedNixHash = "6c0804f1b0fce6831773f042afcab68df793ecb0";
@@ -21,8 +22,6 @@ let
     neovim
     ];
   };
-
-  neovim-nightly = import (builtins.fetchTarball "https://github.com/nix-community/neovim-nightly-overlay/archive/116189ff27ac056faa8ec3f7ecc6dc3f6f565b67.tar.gz") {};
 
   pluginGit = ref: repo: pkgs.vimUtils.buildVimPluginFrom2Nix {
     pname = "${lib.strings.sanitizeDerivationName repo}";
@@ -43,6 +42,7 @@ in
   ];
 
  home.file.".config/nvim/codelldb".source  = nixPackages.vscode-extensions.vadimcn.vscode-lldb;
+ home.file.".config/nvim/extra.lua".source = ./files/neovim.lua;
 
   programs.neovim = {
     enable = true;
@@ -72,6 +72,7 @@ in
       standardPlugins.vim-markdown
       standardPlugins.vim-nix
       (plugin "frazrepo/vim-rainbow")
+      (plugin "szw/vim-maximizer")
 
       # Generic LSP help
       (plugin "neovim/nvim-lspconfig")

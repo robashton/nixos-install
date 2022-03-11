@@ -24,11 +24,12 @@
     };
   };
 
-  networking.interfaces.enp5s0.useDHCP = false;
-  networking.interfaces.enp5s0.ipv4.addresses = [ {
-    address = "192.168.20.100";
-    prefixLength = 24;
-  } ];
+  # Plugged right into the router now
+  networking.interfaces.enp5s0.useDHCP = true;
+  # networking.interfaces.enp5s0.ipv4.addresses = [ {
+  #   address = "192.168.20.100";
+  #   prefixLength = 24;
+  # } ];
 
 
   hardware.cpu.intel.updateMicrocode = true;
@@ -81,14 +82,6 @@
   nixpkgs.config.packageOverrides = pkgs: {
     vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
   };
-
-  nix = {
-    package = pkgs.nixFlakes;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
-   };
-
 
   # VAAPI
   # https://nixos.wiki/wiki/Accelerated_Video_Playback

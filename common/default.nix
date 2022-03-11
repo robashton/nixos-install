@@ -4,17 +4,17 @@ let
   private = import ./private { inherit pkgs; };
 
   # Find an extant release here https://repo.skype.com/deb/pool/main/s/skypeforlinux/
-  skypeforlinux_latest_version = "8.69.76.76";
+  skypeforlinux_latest_version = "8.80.76.112";
   skypeforlinux_latest = pkgs.skypeforlinux.overrideAttrs (oldAttrs: {
     version = skypeforlinux_latest_version;
     src = pkgs.fetchurl {
       url = "https://repo.skype.com/deb/pool/main/s/skypeforlinux/skypeforlinux_${skypeforlinux_latest_version}_amd64.deb";
-      sha256 = "1i33vdh49m26da76wz1ghp03pgvgln61izd7aqchd4q9jifjw61h";
+      sha256 = "0s84yj6qfb0ysj1c6bk2bg6j8ag7grgzrqkxa714k2hm12lc0ab0";
     };
   });
 
   discord_latest = pkgs.discord.overrideAttrs (oldArtrs: {
-    src = builtins.fetchTarball "https://dl.discordapp.net/apps/linux/0.0.16/discord-0.0.16.tar.gz";
+    src = builtins.fetchTarball "https://dl.discordapp.net/apps/linux/0.0.17/discord-0.0.17.tar.gz";
   });
 
   pls = pkgs.nodePackages.purescript-language-server.override {
@@ -74,6 +74,8 @@ in
       };
   };
 
+  nix.autoOptimiseStore = true;
+
 
   programs.steam.enable = true;
   services.pipewire = {
@@ -122,6 +124,8 @@ in
     nixops
     gccStdenv
 
+    motion
+
     # Docker - until I can obviate it
     docker
     docker-gc
@@ -132,7 +136,7 @@ in
     # General web things
     firefox-bin
     google-chrome
-    # skypeforlinux_latest
+    skypeforlinux_latest
     slack
     discord_latest
     teams
