@@ -4,7 +4,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 let
     nvidia-offload = pkgs.writeShellScriptBin "nvidia-offload" ''
     export __NV_PRIME_RENDER_OFFLOAD=1
@@ -35,11 +35,15 @@ in
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  networking.interfaces.enp56s0u2.useDHCP = false;
-  networking.interfaces.enp56s0u2.ipv4.addresses = [ {
-    address = "192.168.20.101";
-    prefixLength = 24;
-  } ];
+  boot.extraModprobeConfig = ''
+    options snd-hda-intel enable_msi=1
+  '';
+
+  networking.interfaces.enp56s0u2.useDHCP = true;
+#  networking.interfaces.enp56s0u2.ipv4.addresses = [ {
+#    address = "192.168.20.101";
+#    prefixLength = 24;
+#  } ];
 
 
   networking.wireless.enable = true;
@@ -117,7 +121,7 @@ in
       (pkgs.intel-media-driver.overrideAttrs (oldAttrs: {
         name = "intel-media-driver";
         postFixup = ''
-          patchelf --set-rpath "$(patchelf --print-rpath $out/lib/dri/iHD_drv_video.so):${stdenv.lib.makeLibraryPath [ xorg.libX11  ]}" \
+          patchelf --set-rpath "$(patchelf --print-rpath $out/lib/dri/iHD_drv_video.so):${lib.makeLibraryPath [ xorg.libX11  ]}" \
             $out/lib/dri/iHD_drv_video.so
         '';
       }))
