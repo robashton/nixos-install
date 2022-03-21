@@ -166,7 +166,7 @@ in
     # General web things
     firefox-bin
     google-chrome
-    skypeforlinux_latest
+    #skypeforlinux_latest
     slack
     discord_latest
     teams
