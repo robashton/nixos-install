@@ -85,6 +85,7 @@ in
 
   home.file.".ssh/id_rsa".source = ../private/sources/nixos-install-priv/id_rsa;
   home.file.".ssh/id_ed25519".source = ../private/sources/nixos-install-priv/id_ed25519;
+  home.file.".ssh/config".source = ../files/sshconfig;
   home.file.".config/alacritty/alacritty.yml".source = ./files/alacritty.yml;
 
   services.udiskie = {
