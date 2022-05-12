@@ -6,7 +6,7 @@ let
 
   # Some version of 0.6 cos 0.7 breaks all our plugins for now
   neovim = import (builtins.fetchTarball {
-      url = https://github.com/nix-community/neovim-nightly-overlay/archive/ccbfeaac2c0b0cae2ab48a1dca49cba4f4ac9b8c.tar.gz;
+      url = https://github.com/nix-community/neovim-nightly-overlay/archive/5ab33071cc20422d0108c7e86d50cd8543e8475d.tar.gz;
     });
 
   pinnedNixHash = "6c0804f1b0fce6831773f042afcab68df793ecb0";
@@ -71,6 +71,7 @@ in
       standardPlugins.typescript-vim
       standardPlugins.vim-markdown
       standardPlugins.vim-nix
+      standardPlugins.vim-qml
       (plugin "frazrepo/vim-rainbow")
       (plugin "szw/vim-maximizer")
 

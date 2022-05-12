@@ -57,7 +57,7 @@ in
     longitude = "4.2";
   };
 
-  nixpkgs.config.allowUnfree = true;
+  nix.autoOptimiseStore = true;
 
   environment.interactiveShellInit = ''
     alias vi='vim'
@@ -74,7 +74,6 @@ in
       };
   };
 
-  nix.autoOptimiseStore = true;
 
 
   programs.steam.enable = true;
@@ -88,6 +87,7 @@ in
     wget
     ag
 
+    musescore
     wine
 
 
