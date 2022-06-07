@@ -130,6 +130,12 @@ nvim_lsp['purescriptls'].setup {
   }
 }
 
+nvim_lsp['hls'].setup {
+  on_attach = on_attach,
+  settings = {}
+}
+
+
 -- Disable the annoying virtual text, we'll use
 -- goto_next/goto_prev and set_loclist to cycle errors
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
