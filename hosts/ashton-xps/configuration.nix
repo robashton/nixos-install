@@ -88,6 +88,8 @@ in
   # Open ports in the firewall.
   networking.firewall.allowPing = true;
 
+  nixpkgs.config.allowUnfree = true;
+
   networking.firewall = {
     trustedInterfaces = [
       "arqiva0" "arqiva1" "arqiva2" "arqiva3" "arqiva4"
