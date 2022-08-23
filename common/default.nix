@@ -14,7 +14,7 @@ let
   });
 
   discord_latest = pkgs.discord.overrideAttrs (oldArtrs: {
-    src = builtins.fetchTarball "https://dl.discordapp.net/apps/linux/0.0.17/discord-0.0.17.tar.gz";
+    src = builtins.fetchTarball "https://dl.discordapp.net/apps/linux/0.0.19/discord-0.0.19.tar.gz";
   });
 
   pls = pkgs.nodePackages.purescript-language-server.override {
@@ -24,6 +24,32 @@ let
     };
   };
 
+
+   dbus-sway-environment = pkgs.writeTextFile {
+    name = "dbus-sway-environment";
+    destination = "/bin/dbus-sway-environment";
+    executable = true;
+
+    text = ''
+  dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+  systemctl --user stop pipewire pipewire-media-session xdg-desktop-portal xdg-desktop-portal-wlr
+  systemctl --user start pipewire pipewire-media-session xdg-desktop-portal xdg-desktop-portal-wlr
+      '';
+  };
+
+  configure-gtk = pkgs.writeTextFile {
+      name = "configure-gtk";
+      destination = "/bin/configure-gtk";
+      executable = true;
+      text = let
+        schema = pkgs.gsettings-desktop-schemas;
+        datadir = "${schema}/share/gsettings-schemas/${schema.name}";
+      in ''
+        export XDG_DATA_DIRS=${datadir}:$XDG_DATA_DIRS
+        gnome_schema=org.gnome.desktop.interface
+        gsettings set $gnome_schema gtk-theme 'Dracula'
+        '';
+  };
 in
 {
   imports =
@@ -79,9 +105,13 @@ in
   programs.steam.enable = true;
   services.pipewire = {
     enable = true;
+    alsa.enable = true;
+    pulse.enable = true;
   };
 
   environment.systemPackages = with pkgs; [
+
+    # Copied and pasted from the nixos sway docs
 
     # Admin & Development Tools
     wget
@@ -154,7 +184,7 @@ in
     mate.mate-calc
     dmenu
     xclip
-    alacritty
+#    alacritty
     termite
     feh
     libreoffice-still
@@ -251,6 +281,17 @@ in
         mako # notification daemon
         alacritty # Alacritty is the default terminal in the config
         dmenu # Dmenu is the default in the config but i recommend wofi since its wayland native
+        dbus-sway-environment
+        configure-gtk
+        wayland
+        glib # gsettings
+        dracula-theme # gtk theme
+        gnome3.adwaita-icon-theme  # default gnome cursors
+        swaylock
+        swayidle
+        grim # screenshot functionality
+        slurp # screenshot functionality
+        bemenu # wayland clone of dmenu
       ];
     };
 
@@ -270,6 +311,14 @@ in
     wireshark = {
       enable = true;
     };
+  };
+  services.dbus.enable = true;
+  xdg.portal = {
+    enable = true;
+    wlr.enable = true;
+    # gtk portal needed to make gtk apps happy
+    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
+    gtkUsePortal = true;
   };
 
   # Enable the OpenSSH daemon.
@@ -338,7 +387,7 @@ in
 
   # Enable sound.
   sound.enable = true;
-  hardware.pulseaudio.enable = true;
+  #hardware.pulseaudio.enable = true;
 
   # Disable that annoying-as-fuck 'SURELY YOU MUST WANT TO USE HDMI AUDIO NOW YOUR MONITOR IS TURNED ON' behaviour
   # jfc why is that the default fucking hell no

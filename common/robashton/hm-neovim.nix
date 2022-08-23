@@ -59,7 +59,8 @@ in
       standardPlugins.nerdtree
       standardPlugins.vim-surround
 #      standardPlugins.vim-fugitive
-      standardPlugins.vim-airline
+#      standardPlugins.vim-airline
+      (plugin "vim-airline/vim-airline")
       standardPlugins.tagbar
 #      standardPlugins.vim-gutentags
       standardPlugins.indentLine
