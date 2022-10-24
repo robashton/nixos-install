@@ -59,7 +59,6 @@ in
       standardPlugins.nerdtree
       standardPlugins.vim-surround
 #      standardPlugins.vim-fugitive
-#      standardPlugins.vim-airline
       (plugin "vim-airline/vim-airline")
       standardPlugins.tagbar
 #      standardPlugins.vim-gutentags
@@ -75,6 +74,7 @@ in
       standardPlugins.vim-qml
       (plugin "frazrepo/vim-rainbow")
       (plugin "szw/vim-maximizer")
+      (plugin "vim-airline/vim-airline")
 
       # Generic LSP help
       (plugin "neovim/nvim-lspconfig")

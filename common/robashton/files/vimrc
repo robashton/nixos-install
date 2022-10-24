@@ -187,7 +187,7 @@ filetype plugin on
 
 augroup AutoActionsLsp
   autocmd!
-  autocmd BufWritePre * lua vim.lsp.buf.formatting_sync()
+  autocmd BufWritePre * lua vim.lsp.buf.formatting()
 augroup END
 
 " Allow project specific defaults (mostly override the above)
