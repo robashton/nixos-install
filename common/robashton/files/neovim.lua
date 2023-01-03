@@ -1,4 +1,5 @@
 local nvim_lsp = require 'lspconfig'
+local util = require 'lspconfig.util'
 
 local signs = { Error = "❌", Warning = "⚠️", Hint = "🎬", Info = "ⓘ " }
 
@@ -117,12 +118,13 @@ require("dapui").setup({})
 
 -- Configure Purescript
 nvim_lsp['purescriptls'].setup {
+  root_dir = util.root_pattern('spago.dhall', 'spago.yaml'),
   on_attach = on_attach,
   settings = {
     purescript = {
       formatter = "purs-tidy",
       codegenTargets = { "corefn" },
-      addSpagoSources = true,
+      addSpagoSources = true
     },
   },
   flags = {
