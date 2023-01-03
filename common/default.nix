@@ -14,7 +14,7 @@ let
   });
 
   discord_latest = pkgs.discord.overrideAttrs (oldArtrs: {
-    src = builtins.fetchTarball "https://dl.discordapp.net/apps/linux/0.0.21/discord-0.0.21.tar.gz";
+    src = builtins.fetchTarball "https://dl.discordapp.net/apps/linux/0.0.22/discord-0.0.22.tar.gz";
   });
 
   pls = pkgs.nodePackages.purescript-language-server.override {
@@ -57,6 +57,8 @@ in
       ./robashton
       ./stears
       ./nicholaw
+      ./steve
+      ./adrian
     ];
 
 
@@ -438,14 +440,16 @@ in
     ];
   };
 
-     nixpkgs.config.permittedInsecurePackages = [
-         "google-chrome-81.0.4044.138"
-       ];
+   nixpkgs.config.permittedInsecurePackages = [
+     "python2.7-PyJWT-1.7.1"
+     "python2.7-urllib3-1.26.2"
+   ];
 
   # services.xserver.xkbOptions = "eurosign:e";
 
   # Enable passwd and co.
   users.mutableUsers = true;
+
 
   # This value determines the NixOS release with which your system is to be
   # compatible, in order to avoid breaking some software such as database
