@@ -118,7 +118,7 @@ require("dapui").setup({})
 
 -- Configure Purescript
 nvim_lsp['purescriptls'].setup {
-  root_dir = util.root_pattern('spago.dhall', 'spago.yaml'),
+  root_dir = util.root_pattern('Makefile'),
   on_attach = on_attach,
   settings = {
     purescript = {
