@@ -96,11 +96,7 @@ in
   nixpkgs.config.allowUnfree = true;
 
   networking.firewall = {
-    trustedInterfaces = [
-      "arqiva0" "arqiva1" "arqiva2" "arqiva3" "arqiva4"
-      "perform0" "perform1" "perform2" "perform3" "perform4"
-      "enp56s0u2"
-    ];
+    trustedInterfaces = [ "enp56s0u2" "enp56s0u1"  ];
     allowedTCPPorts = [
       22    # SSH
       8080  # dev
