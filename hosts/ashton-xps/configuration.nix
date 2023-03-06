@@ -13,6 +13,10 @@ let
     export __VK_LAYER_NV_optimus=NVIDIA_only
     exec -a "$0" "$@"
   '';
+
+    nvidia-env = pkgs.writeShellScriptBin "nvidia-env" ''
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${linuxPackages.nvidia_x11}/lib
+  '';
 in
 {
   imports =
@@ -69,6 +73,7 @@ in
 
   environment.systemPackages = with pkgs; [
     nvidia-offload
+    nvidia-env
     xorg.xbacklight
     #bumblebee
     powertop
