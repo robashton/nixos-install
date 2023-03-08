@@ -14,7 +14,7 @@ let
   });
 
   discord_latest = pkgs.discord.overrideAttrs (oldArtrs: {
-    src = builtins.fetchTarball "https://dl.discordapp.net/apps/linux/0.0.22/discord-0.0.22.tar.gz";
+    src = builtins.fetchTarball "https://dl.discordapp.net/apps/linux/0.0.25/discord-0.0.25.tar.gz";
   });
 
   pls = pkgs.nodePackages.purescript-language-server.override {
@@ -117,9 +117,8 @@ in
 
     # Admin & Development Tools
     wget
-    ag
+    silver-searcher
 
-    musescore
     wine
 
 
@@ -136,7 +135,7 @@ in
     htop iotop iftop
     lftp
     tree
-    bashCompletion
+    bash-completion
     wireshark
     wireshark-cli
     iperf
@@ -149,7 +148,7 @@ in
     awscli
     unzip
     dnsutils
-    manpages
+    man-pages
     pciutils usbutils
     fwupd
     shellcheck
@@ -180,8 +179,8 @@ in
     #keepassxc
 
     # Desktop Env
-    gnome3.dconf
-    gnome3.dconf-editor
+#    gnome3.dconf
+#    gnome3.dconf-editor
     gnome3.gnome-screenshot
     mate.mate-calc
     dmenu
@@ -389,11 +388,16 @@ in
 
   # Enable sound.
   sound.enable = true;
-  #hardware.pulseaudio.enable = true;
+  # hardware.pulseaudio.enable = true;
 
   # Disable that annoying-as-fuck 'SURELY YOU MUST WANT TO USE HDMI AUDIO NOW YOUR MONITOR IS TURNED ON' behaviour
   # jfc why is that the default fucking hell no
   hardware.pulseaudio.extraConfig = "unload-module module-switch-on-port-available";
+
+  hardware.pulseaudio.configFile = pkgs.runCommand "default.pa" {} ''
+  sed 's/module-udev-detect$/module-udev-detect tsched=0/' \
+    ${pkgs.pulseaudio}/etc/pulse/default.pa > $out
+'';
 
 
 
@@ -443,6 +447,8 @@ in
    nixpkgs.config.permittedInsecurePackages = [
      "python2.7-PyJWT-1.7.1"
      "python2.7-urllib3-1.26.2"
+     "python2.7-certifi-2021.10.8"
+     "python2.7-pyjwt-1.7.1"
    ];
 
   # services.xserver.xkbOptions = "eurosign:e";

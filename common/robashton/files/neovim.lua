@@ -132,6 +132,10 @@ nvim_lsp['purescriptls'].setup {
   }
 }
 
+-- nvim_lsp['clangd'].setup{
+--   on_attach = on_attach
+-- }
+
 nvim_lsp['hls'].setup {
   on_attach = on_attach,
   settings = {}
