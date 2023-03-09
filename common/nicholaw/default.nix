@@ -21,6 +21,7 @@
   home-manager.users.nicholaw = {
     home.packages = (with pkgs; [
     ]);
+    home.stateVersion = "22.11";
 
     programs.vim = {
       enable = false;

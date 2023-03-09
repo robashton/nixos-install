@@ -16,11 +16,12 @@
       (import ./files/pubkey-philip-yk.nix)
     ];
   };
-    
+
 
   home-manager.users.stears = {
     home.packages = (with pkgs; [
     ]);
+    home.stateVersion = "22.11";
 
     programs.vim = {
       enable = false;

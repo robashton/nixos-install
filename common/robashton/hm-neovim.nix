@@ -4,24 +4,25 @@ let
   standardPlugins = pkgs.vimPlugins;
   customPlugins = import ./vim-plugins.nix { inherit pkgs; };
 
-  # Some version of 0.6 cos 0.7 breaks all our plugins for now
-  neovim = import (builtins.fetchTarball {
-      url = https://github.com/nix-community/neovim-nightly-overlay/archive/5ab33071cc20422d0108c7e86d50cd8543e8475d.tar.gz;
-    });
-
-  pinnedNixHash = "6c0804f1b0fce6831773f042afcab68df793ecb0";
-
-  pinnedNix =
-    builtins.fetchGit {
-      name = "nixpkgs-pinned";
-      url = "https://github.com/NixOS/nixpkgs.git";
-      rev = "${pinnedNixHash}";
-    };
-
-  nixPackages = import pinnedNix{ overlays = [
-    neovim
-    ];
-  };
+#  # Some version of 0.6 cos 0.7 breaks all our plugins for now
+#  neovim = import (builtins.fetchTarball {
+#      url = https://github.com/nix-community/neovim-nightly-overlay/archive/5ab33071cc20422d0108c7e86d50cd8543e8475d.tar.gz;
+#    });
+#
+#  pinnedNixHash = "7a91fdd124546889cfc08765bb3e0be71f07aa49";
+#
+#  pinnedNix =
+#    builtins.fetchGit {
+#      name = "nixpkgs-pinned";
+#      url = "https://github.com/NixOS/nixpkgs.git";
+#      rev = "${pinnedNixHash}";
+#      allRefs = true;
+#    };
+#
+#  nixPackages = import pinnedNix{ overlays = [
+#    neovim
+#    ];
+#  };
 
   pluginGit = ref: repo: pkgs.vimUtils.buildVimPluginFrom2Nix {
     pname = "${lib.strings.sanitizeDerivationName repo}";
@@ -41,14 +42,14 @@ in
     universal-ctags
   ];
 
- home.file.".config/nvim/codelldb".source  = nixPackages.vscode-extensions.vadimcn.vscode-lldb;
+ home.file.".config/nvim/codelldb".source  = pkgs.vscode-extensions.vadimcn.vscode-lldb;
  home.file.".config/nvim/extra.lua".source = ./files/neovim.lua;
 
   programs.neovim = {
     enable = true;
     viAlias = true;
     vimAlias = true;
-    package = nixPackages.neovim-unwrapped;
+    package = pkgs.neovim-unwrapped;
 
     plugins = [
 

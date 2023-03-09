@@ -16,11 +16,12 @@
       (import ./files/pubkey-adrian.nix)
     ];
   };
-    
+
 
   home-manager.users.adrian = {
     home.packages = (with pkgs; [
     ]);
+    home.stateVersion = "22.11";
 
     programs.vim = {
       enable = false;
