@@ -1,20 +1,22 @@
 { config, pkgs, lib, ... }:
 
 let
-  private = import ./private { inherit pkgs; };
 
-  # Find an extant release here https://repo.skype.com/deb/pool/main/s/skypeforlinux/
-  skypeforlinux_latest_version = "8.80.76.112";
-  skypeforlinux_latest = pkgs.skypeforlinux.overrideAttrs (oldAttrs: {
-    version = skypeforlinux_latest_version;
-    src = pkgs.fetchurl {
-      url = "https://repo.skype.com/deb/pool/main/s/skypeforlinux/skypeforlinux_${skypeforlinux_latest_version}_amd64.deb";
-      sha256 = "0s84yj6qfb0ysj1c6bk2bg6j8ag7grgzrqkxa714k2hm12lc0ab0";
-    };
-  });
+# Find an extant release here https://repo.skype.com/deb/pool/main/s/skypeforlinux/
+#  skypeforlinux_latest_version = "8.96.76.407";
+#  skypeforlinux_latest = pkgs.skypeforlinux.overrideAttrs (oldAttrs: {
+#    version = skypeforlinux_latest_version;
+#    src = pkgs.fetchurl {
+#      url = "https://repo.skype.com/deb/pool/main/s/skypeforlinux/skypeforlinux_${skypeforlinux_latest_version}_amd64.deb";
+#      sha256 = "00wa8c1ndwrwn28zp01lg6z8yzj6vxrpy3rva4c9n7ra3gpn2wrk";
+#    };
+#  });
 
   discord_latest = pkgs.discord.overrideAttrs (oldArtrs: {
-    src = builtins.fetchTarball "https://dl.discordapp.net/apps/linux/0.0.25/discord-0.0.25.tar.gz";
+    src = builtins.fetchTarball {
+      url ="https://dl.discordapp.net/apps/linux/0.0.25/discord-0.0.25.tar.gz";
+      sha256 = "12yrhlbigpy44rl3icir3jj2p5fqq2ywgbp5v3m1hxxmbawsm6wi";
+    };
   });
 
   pls = pkgs.nodePackages.purescript-language-server.override {
@@ -66,11 +68,9 @@ in
     %wheel	ALL=(ALL)	NOPASSWD: ALL
   '';
 
+  console.keyMap = "uk";
   # Select internationalisation properties.
   i18n = {
-    # consoleFont = "Lat2-Terminus16";
-    consoleKeyMap = "us";
-
     # English Language with sensible formatting
     defaultLocale = "en_US.UTF-8";
   };
@@ -79,13 +79,13 @@ in
   services.timesyncd.enable = true; # the default, but explicitness is a good thing
   time.timeZone = "Europe/London";
 
+  location.latitude = 55.8;
+  location.longitude = 4.2;
   services.redshift = {
     enable = true;
-    latitude = "55.8";
-    longitude = "4.2";
   };
 
-  nix.autoOptimiseStore = true;
+  nix.settings.auto-optimise-store = true;
 
   environment.interactiveShellInit = ''
     alias vi='vim'
@@ -126,7 +126,7 @@ in
     appimage-run
 
     okular
-    dropbox-cli
+    # dropbox-cli
     pavucontrol
     openssh
     git git-lfs
@@ -167,7 +167,7 @@ in
     # General web things
     firefox-bin
     google-chrome
-    #skypeforlinux_latest
+#    skypeforlinux_latest
     slack
     discord_latest
     teams
@@ -326,12 +326,12 @@ in
   services.openssh = {
     enable = true;
     passwordAuthentication = false;
-    challengeResponseAuthentication = false;
+    kbdInteractiveAuthentication = false;
     openFirewall = false;
     forwardX11 = true;
   };
 
-  networking.extraHosts = private.configuration.hosts;
+  networking.extraHosts = pkgs.ashton-private.hosts;
 
 
   # Dropbox
@@ -341,25 +341,27 @@ in
   };
 
   # Speaking of..
-  systemd.user.services.dropbox = {
-    description = "Dropbox";
-    after = [ "xembedsniproxy.service" ];
-    wants = [ "xembedsniproxy.service" ];
-    wantedBy = [ "graphical-session.target" ];
-    environment = {
-      QT_PLUGIN_PATH = "/run/current-system/sw/" + pkgs.qt5.qtbase.qtPluginPrefix;
-      QML2_IMPORT_PATH = "/run/current-system/sw/" + pkgs.qt5.qtbase.qtQmlPrefix;
-    };
-    serviceConfig = {
-      ExecStart = "${pkgs.dropbox.out}/bin/dropbox";
-      ExecReload = "${pkgs.coreutils.out}/bin/kill -HUP $MAINPID";
-      KillMode = "control-group"; # upstream recommends process
-      Restart = "on-failure";
-      PrivateTmp = true;
-      ProtectSystem = "full";
-      Nice = 10;
-    };
-  };
+#  systemd.user.services.dropbox = {
+#    description = "Dropbox";
+#    after = [ "xembedsniproxy.service" ];
+#    wants = [ "xembedsniproxy.service" ];
+#    wantedBy = [ "graphical-session.target" ];
+#    environment = {
+#      QT_PLUGIN_PATH = "/run/current-system/sw/" + pkgs.qt5.qtbase.qtPluginPrefix;
+#      QML2_IMPORT_PATH = "/run/current-system/sw/" + pkgs.qt5.qtbase.qtQmlPrefix;
+#    };
+#    serviceConfig = {
+#      ExecStart = "${pkgs.dropbox.out}/bin/dropbox";
+#      ExecReload = "${pkgs.coreutils.out}/bin/kill -HUP $MAINPID";
+#      KillMode = "control-group"; # upstream recommends process
+#      Restart = "on-failure";
+#      PrivateTmp = true;
+#      ProtectSystem = "full";
+#      Nice = 10;
+#    };
+#  };
+
+#  systemd.services.nix-daemon.environment.TMPDIR = "/home/tmp"; # do builds on the rather more spacious home partition
 
 
   systemd.coredump.enable = true;
@@ -408,14 +410,13 @@ in
 
     displayManager = {
       lightdm.enable = true;
+      defaultSession = "none+xmonad";
       sessionCommands = ''
         ${pkgs.feh}/bin/feh --bg-fill ~/.config/wallpapers/rainbow-dash.jpg
       '';
     };
 
     windowManager = {
-      default = "xmonad";
-
       xmonad = {
         enable = true;
         enableContribAndExtras = true;
@@ -426,10 +427,11 @@ in
     };
 
     desktopManager = {
-      default = "none";
       xterm.enable = false;
     };
   };
+
+
 
   services.compton = {
     vSync           = true;

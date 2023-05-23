@@ -1,8 +1,4 @@
 { pkgs, lib, ... }:
-
-let
-  private = import ../private { inherit pkgs; };
-in
 {
   programs.home-manager = {
     enable = true;
@@ -83,8 +79,8 @@ in
     recursive = true;
   };
 
-  home.file.".ssh/id_rsa".source = ../private/sources/nixos-install-priv/id_rsa;
-  home.file.".ssh/id_ed25519".source = ../private/sources/nixos-install-priv/id_ed25519;
+  home.file.".ssh/id_rsa".text = pkgs.ashton-private.id_rsa;
+  home.file.".ssh/id_ed25519".text = pkgs.ashton-private.id_ed25519;
   home.file.".ssh/config".source = ../files/sshconfig;
   home.file.".config/alacritty/alacritty.yml".source = ./files/alacritty.yml;
 

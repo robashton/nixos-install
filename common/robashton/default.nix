@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, private, ... }:
 let
   home-manager = builtins.fetchGit {
     url = "https://github.com/rycee/home-manager.git";
@@ -11,13 +11,7 @@ in
     "${home-manager}/nixos"
   ];
 
-  nixpkgs.overlays = [
-    (import (builtins.fetchTarball {
-      url = https://github.com/nix-community/neovim-nightly-overlay/archive/master.tar.gz;
-    }))
-  ];
-
-  nix.trustedUsers = [
+  nix.settings.trusted-users = [
     "robashton"
   ];
 
@@ -37,5 +31,5 @@ in
     ];
   };
 
-  home-manager.users.robashton = import ./hm.nix { inherit pkgs lib; };
+  home-manager.users.robashton = import ./hm.nix { inherit pkgs lib private; };
 }

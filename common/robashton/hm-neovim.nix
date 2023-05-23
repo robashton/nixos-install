@@ -60,7 +60,7 @@ in
       standardPlugins.nerdtree
       standardPlugins.vim-surround
 #      standardPlugins.vim-fugitive
-      (plugin "vim-airline/vim-airline")
+#      (pluginGit "vim-airline/vim-airline" "5891a3f7bedb5d0b23a546189a607836913814bb")
       standardPlugins.tagbar
 #      standardPlugins.vim-gutentags
       standardPlugins.indentLine
@@ -73,37 +73,36 @@ in
       standardPlugins.vim-markdown
       standardPlugins.vim-nix
       standardPlugins.vim-qml
-      (plugin "frazrepo/vim-rainbow")
-      (plugin "szw/vim-maximizer")
-      (plugin "vim-airline/vim-airline")
+#      (pluginGit "frazrepo/vim-rainbow" "a6c7fd5a2b0193b5dbd03f62ad820b521dea3290")
+#      (plugin "szw/vim-maximizer")
 
       # Generic LSP help
-      (plugin "neovim/nvim-lspconfig")
-      (plugin "nvim-lua/lsp_extensions.nvim")
+#      (plugin "neovim/nvim-lspconfig")
+#      (plugin "nvim-lua/lsp_extensions.nvim")
 
       # More LSP overlay shit (and debug support)
       # (pluginGit "64af19183e51911886f3fc82b23cb2430ababcaf" "robashton/rust-tools.nvim")
-      (plugin "simrat39/rust-tools.nvim")
+#      (plugin "simrat39/rust-tools.nvim")
 
       # Generic debug help tools
-      (plugin "nvim-lua/popup.nvim")
-      (plugin "nvim-lua/plenary.nvim")
-      (plugin "nvim-telescope/telescope.nvim")
+#      (plugin "nvim-lua/popup.nvim")
+#      (plugin "nvim-lua/plenary.nvim")
+#      (plugin "nvim-telescope/telescope.nvim")
 
       # The actual debugger
-      (plugin "mfussenegger/nvim-dap")
+#      (plugin "mfussenegger/nvim-dap")
 
       # Extensions for debugger
-      (plugin "rcarriga/nvim-dap-ui")
-      (plugin "theHamsta/nvim-dap-virtual-text")
+#      (plugin "rcarriga/nvim-dap-ui")
+#      (plugin "theHamsta/nvim-dap-virtual-text")
 
       # Rusty stuff
-      (plugin "hrsh7th/nvim-cmp")
-      (plugin "hrsh7th/cmp-nvim-lsp")
-      (plugin "hrsh7th/cmp-vsnip")
-      (plugin "hrsh7th/cmp-path")
-      (plugin "hrsh7th/cmp-buffer")
-      (plugin "hrsh7th/vim-vsnip")
+#      (plugin "hrsh7th/nvim-cmp")
+#      (plugin "hrsh7th/cmp-nvim-lsp")
+#      (plugin "hrsh7th/cmp-vsnip")
+#      (plugin "hrsh7th/cmp-path")
+#      (plugin "hrsh7th/cmp-buffer")
+#      (plugin "hrsh7th/vim-vsnip")
 
       # Rust Bits
       #standardPlugins.ale
