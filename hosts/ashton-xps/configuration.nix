@@ -15,7 +15,7 @@ let
   '';
 
     nvidia-env = pkgs.writeShellScriptBin "nvidia-env" ''
-    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${linuxPackages.nvidia_x11}/lib
+      export NVIDIA_DRIVERS=${pkgs.linuxPackages.nvidia_x11}
   '';
 in
 {
@@ -99,11 +99,25 @@ in
     trustedInterfaces = [ "enp56s0u2" "enp56s0u1"  ];
     allowedTCPPorts = [
       22    # SSH
+      6791
       8080  # dev
       3000
+      8800
+      8801
+      8802
+      8803
+      8804
     ];
 
-    allowedUDPPorts = [32005];
+    allowedUDPPorts = [
+      32005
+      6791
+      8800
+      8801
+      8802
+      8803
+      8804
+    ];
 
     allowedUDPPortRanges = [ ];
 
