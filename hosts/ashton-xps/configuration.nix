@@ -50,6 +50,20 @@ in
 #  } ];
 
 
+  networking.networkmanager = {
+    enable = true;
+    default = "wlp0s20f3";
+    unmanaged = [];
+
+  };
+
+  services.strongswan = {
+    enable = true;
+    secrets = [
+      "ipsec.d/ipsec.nm-l2tp.secrets"
+    ];
+  };
+
   networking.wireless.enable = true;
 
   services.xserver.autorun = true;
