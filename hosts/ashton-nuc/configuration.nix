@@ -42,6 +42,24 @@
   boot.kernelPackages = pkgs.linuxPackages_latest;
   networking.wireless.enable = true;
 
+
+  # " I only want this for l2tp
+  networking.networkmanager = {
+    enable = true;
+    default = "enp5s0";
+    unmanaged = [
+      "wlp6s0"
+    ];
+
+  };
+
+  services.strongswan = {
+    enable = true;
+    secrets = [
+      "ipsec.d/ipsec.nm-l2tp.secrets"
+    ];
+  };
+
   hardware.bluetooth.enable = true;
   services.blueman.enable = true;
 
@@ -50,6 +68,7 @@
 
   services.xserver.layout = "us";
   services.xserver.autorun = false;
+
 
 #  services.xserver.videoDrivers = lib.mkForce [];
 #  services.drivers = [

@@ -88,7 +88,8 @@ in
   nix.settings.auto-optimise-store = true;
 
   environment.interactiveShellInit = ''
-    alias vi='vim'
+    alias vi='nvim'
+    alias vim='nvim'
   '';
 
   users.extraGroups.tmux = {
@@ -121,6 +122,8 @@ in
 
     wine
 
+    networkmanager-l2tp
+    strongswan
 
     sonic-pi
     appimage-run
