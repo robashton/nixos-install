@@ -1,0 +1,159 @@
+{ pkgs, hostname, ... }:
+let
+  brewPkgs = [
+
+  ];
+  brewCasks = [
+    "audacity"
+    "discord"
+    "dropbox"
+    "firefox"
+    "google-chrome"
+    "launchcontrol"
+    "loopback"
+    "lunar"
+    "native-access"
+    "skype"
+    "slack"
+    "spotify"
+    "vlc"
+    "wireshark"
+    "zoom"
+  ];
+  nixPkgs = with pkgs; [
+    ashton-neovim
+    arp-scan
+    awscli2
+    bat
+    clang
+    coreutils
+    curl
+    tmux
+    diff-so-fancy
+    fd
+    (ffmpeg-full.override { withGme = false; })
+    fzf
+    git-lfs
+    git-filter-repo
+    gnumake
+    gnupg
+    iftop
+    jc
+    jq
+    m-cli
+    nmap
+    nodejs
+    python3
+    ripgrep
+    rsync
+    silver-searcher
+    terminal-notifier
+    tokei
+    tldr
+    tree
+    wget
+    youtube-dl
+  ];
+in
+
+{
+  networking.hostName = hostname;
+
+  nix.package = pkgs.nixVersions.stable;
+  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.allowUnsupportedSystem = true;
+
+  programs.zsh.enable = true;
+  programs.nix-index.enable = true;
+
+  time.timeZone = "Europe/London";
+
+  # Recreate /run/current-system symlink after boot
+  services.activate-system.enable = true;
+  services.nix-daemon.enable = true;
+
+  homebrew = {
+    enable = true;
+    global.brewfile = true;
+    brewPrefix = "/opt/homebrew/bin";
+    onActivation = {
+      autoUpdate = true;
+      upgrade = true;
+      cleanup = "zap";
+    };
+    taps = [
+      "homebrew/core"
+      "homebrew/cask"
+    ];
+    brews = brewPkgs;
+    casks = brewCasks;
+    masApps = {
+
+    };
+  };
+
+  users.users.robashton = {
+    home = "/Users/robashton";
+  };
+
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users.robashton = { pkgs, ... }: {
+      home.stateVersion = "23.05";
+      home.packages = nixPkgs;
+
+      # https://github.com/nix-community/home-manager/issues/423
+      home.sessionVariables = {
+        PAGER = "less -R";
+      };
+
+      programs.direnv = {
+        enable = true;
+        nix-direnv.enable = true;
+      };
+
+
+      programs.htop = {
+        enable = true;
+        settings.show_program_path = true;
+      };
+    };
+  };
+
+  system.defaults = {
+    dock = {
+      autohide = true;
+      mru-spaces = false;
+      minimize-to-application = true;
+    };
+
+    screencapture.location = "/tmp";
+
+    finder = {
+      AppleShowAllExtensions = true;
+      _FXShowPosixPathInTitle = true;
+      FXEnableExtensionChangeWarning = false;
+    };
+
+    NSGlobalDomain._HIHideMenuBar = false;
+    NSGlobalDomain.NSWindowResizeTime = 0.1;
+
+  };
+
+  fonts.fontDir.enable = true;
+  fonts.fonts = with pkgs; [
+    fira-code
+    font-awesome
+    inconsolata
+    recursive
+    roboto
+    roboto-mono
+  ];
+
+  system.keyboard = {
+    enableKeyMapping = true;
+    remapCapsLockToEscape = true;
+  };
+}
+

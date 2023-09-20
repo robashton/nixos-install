@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+nix build .\#darwinConfigurations.`hostname`.system
+./result/sw/bin/darwin-rebuild switch --flake .
+
