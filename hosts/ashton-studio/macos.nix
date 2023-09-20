@@ -96,16 +96,31 @@ in
     home = "/Users/robashton";
   };
 
+
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
     users.robashton = { pkgs, ... }: {
       home.stateVersion = "23.05";
       home.packages = nixPkgs;
+      home.file.".ssh/id_rsa".text = pkgs.ashton-private.id_rsa;
+      home.file.".ssh/id_ed25519".text = pkgs.ashton-private.id_ed25519;
 
       # https://github.com/nix-community/home-manager/issues/423
       home.sessionVariables = {
         PAGER = "less -R";
+      };
+
+      programs.zsh = {
+        enable = true;
+        enableCompletion = true;
+        initExtra = ''
+          test -f ~/.dir_colors && eval $(dircolors ~/.dir_colors)
+        '';
+        shellAliases = {
+          vi = "nvim";
+          vim = "nvim";
+        };
       };
 
       programs.direnv = {

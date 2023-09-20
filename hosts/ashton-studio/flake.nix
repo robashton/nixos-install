@@ -30,7 +30,7 @@
           system.configurationRevision = nixpkgs.lib.mkIf (self ? rev) self.rev;
           nix.extraOptions = "experimental-features = nix-command flakes";
           nixpkgs.overlays = [
-             (_: _: { ashton-private = inputs.private.legacyPackages.aarch64-darwin.default; })
+             (_: _: { ashton-private = inputs.private.legacyPackages.aarch64-darwin; })
              (_: _: { ashton-neovim = inputs.neovim.packages.aarch64-darwin.default; })
           ];
         })
