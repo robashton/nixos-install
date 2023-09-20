@@ -133,6 +133,11 @@ in
         enable = true;
         settings.show_program_path = true;
       };
+
+      programs.git = {
+        enable = true;
+        userName = "Rob Ashton"; userEmail = "robashton@codeofrob.com";
+      };
     };
   };
 
