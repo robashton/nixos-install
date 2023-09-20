@@ -2,10 +2,10 @@
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
   inputs.private = { url = "git+ssh://git@github.com/robashton/nixos-install-private"; };
 
-  inputs.neovim = { url = "/home/robashton/src/flake-neovim"; };
+  inputs.neovim = { url = "git+ssh://git@github.com/robashton/flake-neovim"; };
 
   outputs = { self, nixpkgs, private, neovim }: {
-    nixosConfigurations.ashton-nuc = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.ashton-xps = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         ({ pkgs, ... }: {

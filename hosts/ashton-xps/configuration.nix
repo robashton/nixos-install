@@ -49,10 +49,11 @@ in
 #    prefixLength = 24;
 #  } ];
 
+#  networking.wireless.enable = true;
 
   networking.networkmanager = {
     enable = true;
-    default = "wlp0s20f3";
+#    default = "wlp0s20f3";
     unmanaged = [];
 
   };
@@ -64,7 +65,6 @@ in
     ];
   };
 
-  networking.wireless.enable = true;
 
   services.xserver.autorun = true;
   services.xserver.xkbOptions = "ctrl:swapcaps";
