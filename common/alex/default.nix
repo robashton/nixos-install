@@ -3,32 +3,21 @@
 { config, pkgs, lib, ... }:
  {
 
-  users.extraGroups.steve = {};
+  users.extraGroups.alex = {};
 
-  users.users.steve = {
+  users.users.alex = {
     isNormalUser = true;
     extraGroups = [ "docker" "wireshark" "video" "tmux" ];
     createHome = true;
-    home = "/home/steve";
-    group = "steve";
-
-    openssh.authorizedKeys.keys = [
-      (import ./files/pubkey.nix)
-    ];
+    home = "/home/alex";
+    group = "alex";
   };
 
 
-  home-manager.users.steve = {
+  home-manager.users.alex = {
     home.packages = (with pkgs; [
     ]);
     home.stateVersion = "22.11";
-
-    programs.vim = {
-      enable = false;
-      plugins = [];
-      settings = { ignorecase = true; };
-      extraConfig = (builtins.readFile ./files/vimrc);
-    };
 
     # Need bash enabled so that direnv can add its
     # config

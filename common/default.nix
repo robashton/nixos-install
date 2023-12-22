@@ -61,6 +61,7 @@ in
       ./nicholaw
       ./steve
       ./adrian
+      ./alex
     ];
 
 
