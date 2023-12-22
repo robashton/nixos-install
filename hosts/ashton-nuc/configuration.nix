@@ -46,7 +46,6 @@
   # " I only want this for l2tp
   networking.networkmanager = {
     enable = true;
-    default = "enp5s0";
     unmanaged = [
       "wlp6s0"
     ];
