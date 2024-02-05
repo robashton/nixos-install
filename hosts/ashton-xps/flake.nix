@@ -3,8 +3,9 @@
   inputs.private = { url = "git+ssh://git@github.com/robashton/nixos-install-private"; };
 
   inputs.neovim = { url = "git+ssh://git@github.com/robashton/flake-neovim"; };
+  inputs.hx = { url = "/home/robashton/src/flake-helix"; };
 
-  outputs = { self, nixpkgs, private, neovim }: {
+  outputs = { self, nixpkgs, private, neovim, hx }: {
     nixosConfigurations.ashton-xps = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
@@ -15,6 +16,7 @@
           nixpkgs.overlays = [
              (_: _: { ashton-private = private.legacyPackages.x86_64-linux; })
              (_: _: { ashton-neovim = neovim.packages.x86_64-linux.default; })
+             (_: _: { ashton-hx = hx.packages.x86_64-linux.default; })
           ];
 
         })

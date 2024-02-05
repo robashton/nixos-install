@@ -10,9 +10,11 @@
 
     private = { url = "git+ssh://git@github.com/robashton/nixos-install-private"; };
     neovim = { url = "git+ssh://git@github.com/robashton/flake-neovim"; };
+    hx = { url = "git+ssh://git@github.com/robashton/flake-helix"; };
 
     private.inputs.nixpkgs.follows = "nixpkgs-unstable";
     neovim.inputs.nixpkgs.follows = "nixpkgs-unstable";
+    hx.inputs.nixpkgs.follows = "nixpkgs-unstable";
     darwin.inputs.nixpkgs.follows = "nixpkgs-unstable";
     home-manager.inputs.nixpkgs.follows = "nixpkgs-unstable";
   };
@@ -32,6 +34,7 @@
           nixpkgs.overlays = [
              (_: _: { ashton-private = inputs.private.legacyPackages.aarch64-darwin; })
              (_: _: { ashton-neovim = inputs.neovim.packages.aarch64-darwin.default; })
+             (_: _: { ashton-hx = inputs.hx.packages.aarch64-darwin.default; })
           ];
         })
         ./macos.nix

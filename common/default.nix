@@ -155,7 +155,7 @@ in
     pciutils usbutils
     fwupd
     shellcheck
-    nixops
+    nixops_unstable
     gccStdenv
 
     motion
@@ -173,7 +173,7 @@ in
 #    skypeforlinux_latest
     slack
     discord_latest
-    teams
+    #teams # dead :(
     zoom-us
 
     # Security
@@ -192,9 +192,6 @@ in
     termite
     feh
     libreoffice-still
-
-    # Needed for Coc
-    nodejs-14_x
 
     # Wayland stuff
     wl-clipboard
