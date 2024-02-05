@@ -25,6 +25,7 @@ let
   ];
   nixPkgs = with pkgs; [
     ashton-neovim
+    ashton-hx
     arp-scan
     awscli2
     bat

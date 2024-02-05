@@ -14,7 +14,6 @@
 
     private.inputs.nixpkgs.follows = "nixpkgs-unstable";
     neovim.inputs.nixpkgs.follows = "nixpkgs-unstable";
-    hx.inputs.nixpkgs.follows = "nixpkgs-unstable";
     darwin.inputs.nixpkgs.follows = "nixpkgs-unstable";
     home-manager.inputs.nixpkgs.follows = "nixpkgs-unstable";
   };
