@@ -19,6 +19,9 @@ let
     "vlc"
     "wireshark"
     "zoom"
+    "iterm2"
+    "rectangle"
+    "docker"
   ];
   nixPkgs = with pkgs; [
     ashton-neovim
@@ -82,8 +85,6 @@ in
       cleanup = "zap";
     };
     taps = [
-      "homebrew/core"
-      "homebrew/cask"
     ];
     brews = brewPkgs;
     casks = brewCasks;
@@ -116,6 +117,10 @@ in
         enableCompletion = true;
         initExtra = ''
           test -f ~/.dir_colors && eval $(dircolors ~/.dir_colors)
+          setopt no_share_history
+          unsetopt share_history
+          bindkey "^[[1;5C" forward-word
+          bindkey "^[[1;5D" backward-word
         '';
         shellAliases = {
           vi = "nvim";
