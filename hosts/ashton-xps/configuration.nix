@@ -43,7 +43,7 @@ in
     options snd-hda-intel enable_msi=1
   '';
 
-  networking.interfaces.enp56s0u2.useDHCP = true;
+# networking.interfaces.enp56s0u2.useDHCP = true;
 #  networking.interfaces.enp56s0u2.ipv4.addresses = [ {
 #    address = "192.168.20.101";
 #    prefixLength = 24;
