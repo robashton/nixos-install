@@ -1,5 +1,5 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.11";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
   inputs.private = { url = "git+ssh://git@github.com/robashton/nixos-install-private"; };
 
   inputs.neovim = { url = "git+ssh://git@github.com/robashton/flake-neovim"; };

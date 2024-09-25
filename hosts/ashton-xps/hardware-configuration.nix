@@ -23,10 +23,18 @@
       fsType = "vfat";
     };
 
+  fileSystems."/nix" =
+    { device = "/dev/disk/by-uuid/e29737ed-8f80-47c3-8160-448ab3bd94e9";
+      fsType = "ext4";
+      neededForBoot = true;
+      options = [ "noatime" ];
+    };
+
   fileSystems."/home" =
     { device = "/dev/disk/by-uuid/e29737ed-8f80-47c3-8160-448ab3bd94e9";
       fsType = "ext4";
     };
+
 
     swapDevices = [ {
       device = "/home/swapfile";
