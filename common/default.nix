@@ -14,8 +14,8 @@ let
 
   discord_latest = pkgs.discord.overrideAttrs (oldArtrs: {
     src = builtins.fetchTarball {
-      url ="https://dl.discordapp.net/apps/linux/0.0.25/discord-0.0.25.tar.gz";
-      sha256 = "12yrhlbigpy44rl3icir3jj2p5fqq2ywgbp5v3m1hxxmbawsm6wi";
+      url ="https://dl.discordapp.net/apps/linux/0.0.74/discord-0.0.74.tar.gz";
+      sha256 = "0f94l4dywdcrkwyry9j4q696l7ky0v4x5jmvv3l919rkjxxm5lqg";
     };
   });
 
@@ -156,7 +156,7 @@ in
     pciutils usbutils
     fwupd
     shellcheck
-    nixops_unstable
+    nixops_unstable_minimal
     gccStdenv
 
     motion
