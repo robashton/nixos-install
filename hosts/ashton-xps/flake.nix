@@ -3,7 +3,7 @@
   inputs.private = { url = "git+ssh://git@github.com/robashton/nixos-install-private"; };
 
   inputs.neovim = { url = "git+ssh://git@github.com/robashton/flake-neovim"; };
-  inputs.hx = { url = "/home/robashton/src/flake-helix"; };
+  inputs.hx = { url = "git+ssh://git@github.com/robashton/flake-helix"; };
 
   outputs = { self, nixpkgs, private, neovim, hx }: {
     nixosConfigurations.ashton-xps = nixpkgs.lib.nixosSystem {
