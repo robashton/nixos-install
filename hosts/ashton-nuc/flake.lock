@@ -171,10 +171,10 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1741593577,
-        "narHash": "sha256-b8jvHEqS7YXG/4+ZqCSynw1jdjfWh6ybvsczIN1y7vc=",
+        "lastModified": 1709132405,
+        "narHash": "sha256-A9opdNbOBfVR9mgRujzylM4ecJ6ErdqIwQmXHbt3S2Q=",
         "ref": "refs/heads/main",
-        "rev": "11e3ab74262eda44ea06c807e83d820ef3bb16ff",
+        "rev": "3c9822a3c2f787d91df1f2d8758db272b6edb0cb",
         "revCount": 8,
         "type": "git",
         "url": "file:///home/robashton/src/flake-helix"
