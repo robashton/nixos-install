@@ -14,8 +14,8 @@ let
 
   discord_latest = pkgs.discord.overrideAttrs (oldArtrs: {
     src = builtins.fetchTarball {
-      url ="https://dl.discordapp.net/apps/linux/0.0.74/discord-0.0.74.tar.gz";
-      sha256 = "0f94l4dywdcrkwyry9j4q696l7ky0v4x5jmvv3l919rkjxxm5lqg";
+      url ="https://stable.dl2.discordapp.net/apps/linux/0.0.76/discord-0.0.76.tar.gz";
+      sha256 = "1xgkbz4llj6sd9p0zzdxm2w4niv03nnd7kjbbbl004xndlf2adcw";
     };
   });
 
@@ -256,6 +256,7 @@ in
 
   # It's useful to be able to manage firmware
   services.fwupd.enable = true;
+  services.journald.extraConfig = "SystemMaxUse=100M";
 
   # And thunderbolt things
   services.hardware.bolt.enable = true;
