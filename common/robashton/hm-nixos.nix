@@ -82,7 +82,7 @@
   home.file.".ssh/id_rsa".text = pkgs.ashton-private.id_rsa;
   home.file.".ssh/id_ed25519".text = pkgs.ashton-private.id_ed25519;
   home.file.".ssh/config".source = ../files/sshconfig;
-  home.file.".config/alacritty/alacritty.yml".source = ./files/alacritty.yml;
+  home.file.".config/alacritty/alacritty.toml".source = ./files/alacritty.toml;
 
   services.udiskie = {
     enable = true;
