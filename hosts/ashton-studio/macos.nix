@@ -1,6 +1,7 @@
 { pkgs, hostname, ... }:
 let
   brewPkgs = [
+    "tailscale"
 
   ];
   brewCasks = [
@@ -24,7 +25,7 @@ let
     "docker"
   ];
   nixPkgs = with pkgs; [
-    ashton-neovim
+    # ashton-neovim
     ashton-hx
     arp-scan
     awscli2
@@ -56,7 +57,6 @@ let
     tldr
     tree
     wget
-    youtube-dl
   ];
 in
 
@@ -73,8 +73,8 @@ in
   time.timeZone = "Europe/London";
 
   # Recreate /run/current-system symlink after boot
-  services.activate-system.enable = true;
-  services.nix-daemon.enable = true;
+  # services.activate-system.enable = true;
+  # services.nix-daemon.enable = true;
 
   homebrew = {
     enable = true;
@@ -173,8 +173,8 @@ in
 
   };
 
-  fonts.fontDir.enable = true;
-  fonts.fonts = with pkgs; [
+  # fonts.fontDir.enable = true;
+  fonts.packages = with pkgs; [
     fira-code
     font-awesome
     inconsolata
@@ -187,5 +187,9 @@ in
     enableKeyMapping = true;
     remapCapsLockToEscape = true;
   };
+  system.stateVersion = 6;
+
+  # if I ever remove and re-instal nix, I can remove this line
+  ids.gids.nixbld = 30000;
 }
 
