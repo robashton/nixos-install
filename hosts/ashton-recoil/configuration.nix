@@ -8,6 +8,9 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+
+      # Common things
+      ./../../common
     ];
 
   # Bootloader.
@@ -17,7 +20,7 @@
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "ashton-recoil"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -51,6 +54,23 @@
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
+  services.strongswan = {
+    enable = true;
+    secrets = [
+      "ipsec.d/ipsec.nm-l2tp.secrets"
+    ];
+  };
+
+  services.xserver.videoDrivers = [ "nvidia" ];
+
+  boot.kernelModules = [ "nvidia-uvm" "nvidia-drm" ];
+
+  boot.blacklistedKernelModules = [ "nouveau" ];
+
+  hardware.nvidia.modesetting.enable = true;
+  hardware.nvidia.prime.offload.enable = true;
+  hardware.nvidia.prime.nvidiaBusId = "PCI:1:0:0";
+  hardware.nvidia.nvidiaPersistenced = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -93,17 +113,18 @@
     ];
   };
 
-  # Install firefox.
-  programs.firefox.enable = true;
-
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-  #  wget
+    nvidia-offload
+    nvidia-env
+    xorg.xbacklight
+    #bumblebee
+    powertop
+    pmutils
+    linuxPackages.nvidia_x11
+    vdpauinfo
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
@@ -132,5 +153,4 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "25.11"; # Did you read the comment?
-
 }
