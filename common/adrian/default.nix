@@ -21,7 +21,7 @@
   home-manager.users.adrian = {
     home.packages = (with pkgs; [
     ]);
-    home.stateVersion = "22.11";
+    home.stateVersion = "24.05";
 
     programs.vim = {
       enable = false;

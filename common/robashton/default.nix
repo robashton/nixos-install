@@ -1,9 +1,9 @@
 { config, pkgs, lib, private, ... }:
 let
   home-manager = builtins.fetchGit {
-    url = "https://github.com/rycee/home-manager.git";
-    rev = "2f23fa308a7c067e52dfcc30a0758f47043ec176";
-    ref = "release-24.05";
+    url = "https://github.com/nix-community/home-manager.git";
+    rev = "20561be440a11ec57a89715480717baf19fe6343";
+    ref = "release-25.11";
   };
 in
  {

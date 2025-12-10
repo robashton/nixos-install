@@ -1,12 +1,12 @@
 {
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
   inputs.private = { url = "git+ssh://git@github.com/robashton/nixos-install-private"; };
 
   inputs.neovim = { url = "git+ssh://git@github.com/robashton/flake-neovim"; };
   inputs.hx = { url = "git+ssh://git@github.com/robashton/flake-helix"; };
 
   outputs = { self, nixpkgs, private, neovim, hx }: {
-    nixosConfigurations.ashton-xps = nixpkgs.lib.nixosSystem {
+    nixosConfigurations.ashton-recoil = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       modules = [
         ({ pkgs, ... }: {

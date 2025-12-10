@@ -7,7 +7,7 @@
   home.packages = (with pkgs; [
     simplescreenrecorder
 
-    ktouch
+    # ktouch
     spotify
     playerctl
     imagemagick
@@ -24,9 +24,10 @@
     #linphone
     #ekiga
 
-    okular
+    # okular
 
-    gitAndTools.tig
+    # gitAndTools.tig
+    tig
 
     powerline-fonts
 

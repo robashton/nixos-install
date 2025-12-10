@@ -71,13 +71,14 @@ in
 
   console.keyMap = "uk";
   # Select internationalisation properties.
-  i18n = {
-    # English Language with sensible formatting
-    defaultLocale = "en_US.UTF-8";
-  };
+  # i18n = {xx    # English Language with sensible formatting
+  #   defaultLocale = "en_US.UTF-8";
+  # };
 
   # Set your time zone.
   services.timesyncd.enable = true; # the default, but explicitness is a good thing
+
+  # popups
   time.timeZone = "Europe/London";
 
   location.latitude = 55.8;
@@ -114,6 +115,7 @@ in
   };
 
   environment.systemPackages = with pkgs; [
+    gnome-settings-daemon
 
     # Copied and pasted from the nixos sway docs
 
@@ -129,7 +131,7 @@ in
     sonic-pi
     appimage-run
 
-    okular
+    # okular
     # dropbox-cli
     pavucontrol
     openssh
@@ -185,7 +187,7 @@ in
     # Desktop Env
 #    gnome3.dconf
 #    gnome3.dconf-editor
-    gnome3.gnome-screenshot
+    gnome-screenshot
     mate.mate-calc
     dmenu
     xclip
@@ -194,13 +196,15 @@ in
     feh
     libreoffice-still
 
+    brightnessctl
+
     # Wayland stuff
     wl-clipboard
 
 
     # Hardware Acceleration Utilities
     libva-utils
-    glxinfo
+    mesa-demos
 
     ( writeScriptBin "ra-audio-get-master-volume" ''
       #!${pkgs.bash}/bin/bash
@@ -289,7 +293,7 @@ in
         wayland
         glib # gsettings
         dracula-theme # gtk theme
-        gnome3.adwaita-icon-theme  # default gnome cursors
+        # gnome3.adwaita-icon-theme  # default gnome cursors
         swaylock
         swayidle
         grim # screenshot functionality
@@ -304,7 +308,7 @@ in
     };
 
     # Honestly, nano can just go and die in a fire (lol, totes)
-    vim.defaultEditor = true;
+    # vim.defaultEditor = true;
 
     bash = {
       enableCompletion = true;
@@ -321,7 +325,7 @@ in
     wlr.enable = true;
     # gtk portal needed to make gtk apps happy
     extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-    gtkUsePortal = true;
+    # gtkUsePortal = true;
   };
 
   # Enable the OpenSSH daemon.
@@ -390,10 +394,6 @@ in
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  # Enable sound.
-  sound.enable = true;
-  # hardware.pulseaudio.enable = true;
-
   # Disable that annoying-as-fuck 'SURELY YOU MUST WANT TO USE HDMI AUDIO NOW YOUR MONITOR IS TURNED ON' behaviour
   # jfc why is that the default fucking hell no
   hardware.pulseaudio.extraConfig = "unload-module module-switch-on-port-available";
@@ -404,14 +404,12 @@ in
 '';
 
 
-
-
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
 
     displayManager = {
-      lightdm.enable = true;
+      gdm.enable = true;
       defaultSession = "none+xmonad";
       sessionCommands = ''
         ${pkgs.feh}/bin/feh --bg-fill ~/.config/wallpapers/rainbow-dash.jpg
@@ -429,11 +427,10 @@ in
     };
 
     desktopManager = {
+      gnome.enable = true;
       xterm.enable = false;
     };
   };
-
-
 
   services.compton = {
     vSync           = true;
@@ -465,5 +462,5 @@ in
   # compatible, in order to avoid breaking some software such as database
   # servers. You should change this only after NixOS release notes say you
   # should.
-  system.stateVersion = "20.03"; # Did you read the comment?
+  # system.stateVersion = "20.03"; # Did you read the comment?
 }

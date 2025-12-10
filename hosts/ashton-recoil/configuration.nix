@@ -11,6 +11,9 @@
 
       # Common things
       ./../../common
+
+      # Hardware & user specific things
+      ./robashton
     ];
 
   # Bootloader.
@@ -18,14 +21,10 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  # Disabled for now as incompatibler with even beta nvidia drivers
+  # boot.kernelPackages = pkgs.linuxPackages_latest;
 
   networking.hostName = "ashton-recoil"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
   networking.networkmanager.enable = true;
@@ -48,9 +47,13 @@
     LC_TIME = "en_GB.UTF-8";
   };
 
+  services.hardware.openrgb.enable = true;
+
   # Enable the X11 windowing system.
   services.xserver.enable = true;
 
+
+  services.xserver.xkbOptions = "ctrl:swapcaps";
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
@@ -63,14 +66,29 @@
 
   services.xserver.videoDrivers = [ "nvidia" ];
 
-  boot.kernelModules = [ "nvidia-uvm" "nvidia-drm" ];
+   boot.extraModulePackages = with config.boot.kernelPackages; [
+    acpi_call
+  ];
+
+  boot.kernelModules = [ "nvidia-uvm" "nvidia-drm" "acpi_call" ];
+  boot.kernelParams = [ "acpi_backlight=native" ];
+
+  environment.etc."X11/xorg.conf.d/20-backlight.conf".text = ''
+    Section "Device"
+        Identifier "AMD"
+        Driver "amdgpu"
+        Option "Backlight" "amdgpu_bl2"
+    EndSection
+  '';
 
   boot.blacklistedKernelModules = [ "nouveau" ];
 
   hardware.nvidia.modesetting.enable = true;
   hardware.nvidia.prime.offload.enable = true;
   hardware.nvidia.prime.nvidiaBusId = "PCI:1:0:0";
+  hardware.nvidia.prime.amdgpuBusId = "PCI:6:0:0";
   hardware.nvidia.nvidiaPersistenced = true;
+  hardware.nvidia.open = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -92,16 +110,7 @@
     alsa.enable = true;
     alsa.support32Bit = true;
     pulse.enable = true;
-    # If you want to use JACK applications, uncomment this
-    #jack.enable = true;
-
-    # use the example session manager (no others are packaged yet so this is enabled by default,
-    # no need to redefine it in your config for now)
-    #media-session.enable = true;
   };
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  # services.xserver.libinput.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.robashton = {
@@ -109,42 +118,99 @@
     description = "Rob Ashton";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-    #  thunderbird
     ];
   };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  nixpkgs.overlays = [
+    (final: prev: {
+      avell-unofficial-control-center =
+        prev.avell-unofficial-control-center.overrideAttrs (old: {
+          postPatch = (old.postPatch or "") + ''
+            # Use your actual keyboard PID (048d:600b) instead of the old 0xce00
+            substituteInPlace aucc/main.py \
+              --replace "product_id=0xce00" "product_id=0x600b"
+          '';
+        });
+      })
+  ];
+
+  services.udev.extraRules = ''
+    SUBSYSTEM=="usb", ATTR{idVendor}=="048d", ATTR{idProduct}=="600b", MODE="0660", GROUP="input"
+  '';
+
   environment.systemPackages = with pkgs; [
-    nvidia-offload
-    nvidia-env
+    avell-unofficial-control-center
+    openrgb
+    # nvidia-offload
+    # nvidia-env
     xorg.xbacklight
     #bumblebee
     powertop
     pmutils
     linuxPackages.nvidia_x11
     vdpauinfo
-  ];
 
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
+
+
+    # brightness scripts
+    (pkgs.writeShellScriptBin "fn-brightness-up" ''
+      #!/usr/bin/env bash
+      # Recoil: panel is amdgpu_bl2
+      brightnessctl -d amdgpu_bl2 set +5%
+      BRIGHT=$(brightnessctl -d amdgpu_bl2 get)
+      PERCENT=$(( BRIGHT * 100 / 255 ))
+      dunstify -a bright -r 1337 -h "int:value:$PERCENT" "Brightness: $PERCENT"
+    '')
+
+    (pkgs.writeShellScriptBin "fn-brightness-down" ''
+      #!/usr/bin/env bash
+      brightnessctl -d amdgpu_bl2 set 5%-
+      BRIGHT=$(brightnessctl -d amdgpu_bl2 get)
+      PERCENT=$(( BRIGHT * 100 / 255 ))
+      dunstify -a bright -r 1337 -h "int:value:$PERCENT" "Brightness: $PERCENT"
+    '')
+
+    pkgs.pamixer
+    (pkgs.writeShellScriptBin "fn-volume-up" ''
+      #!/usr/bin/env bash
+      pamixer --increase 5
+      VOL=$(pamixer --get-volume)
+      dunstify -a volume -r 1338 -h "int:value:$VOL" "Volume: $VOL"
+    '')
+
+    (pkgs.writeShellScriptBin "fn-volume-down" ''
+      #!/usr/bin/env bash
+      pamixer --decrease 5
+      VOL=$(pamixer --get-volume)
+      dunstify -a volume -r 1338 -h "int:value:$VOL" "Volume: $VOL"
+    '')
+
+    (pkgs.writeShellScriptBin "fn-volume-mute" ''
+      #!/usr/bin/env bash
+      pamixer --toggle-mute
+      VOL=$(pamixer --get-mute)
+      dunstify -a volume -r 1338 "Muted: $VOL"
+      '')
+
+    (pkgs.writeShellScriptBin "fn-kb-up" ''
+      #!/usr/bin/env bash
+      aucc -b 4 
+      '')
+
+    (pkgs.writeShellScriptBin "fn-kb-down" ''
+      #!/usr/bin/env bash
+      aucc -b 1 
+      '')
+    
+  ];
 
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions

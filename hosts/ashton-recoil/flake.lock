@@ -177,11 +177,11 @@
         "rev": "11e3ab74262eda44ea06c807e83d820ef3bb16ff",
         "revCount": 8,
         "type": "git",
-        "url": "file:///home/robashton/src/flake-helix"
+        "url": "ssh://git@github.com/robashton/flake-helix"
       },
       "original": {
         "type": "git",
-        "url": "file:///home/robashton/src/flake-helix"
+        "url": "ssh://git@github.com/robashton/flake-helix"
       }
     },
     "lsp-config": {
@@ -355,16 +355,16 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1727129439,
-        "narHash": "sha256-nPyrcFm6FSk7CxzVW4x2hu62aLDghNcv9dX6DF3dXw8=",
+        "lastModified": 1764983851,
+        "narHash": "sha256-y7RPKl/jJ/KAP/VKLMghMgXTlvNIJMHKskl8/Uuar7o=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "babc25a577c3310cce57c72d5bed70f4c3c3843a",
+        "rev": "d9bc5c7dceb30d8d6fafa10aeb6aa8a48c218454",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-24.05",
+        "ref": "nixos-25.11",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -485,11 +485,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1684853478,
-        "narHash": "sha256-6ow0RCG9ahcknlE2UkXw6rzJwgqgd6gzlp+iM5vPfns=",
+        "lastModified": 1758008032,
+        "narHash": "sha256-eKgL+UgISdO++awJzaUutf+qUVNeKuj5JVuUc5xsAt8=",
         "ref": "refs/heads/master",
-        "rev": "217eaeab464b9b90f8c87337a3e875d9cd5d0fde",
-        "revCount": 8,
+        "rev": "685ed0e17d77048684fd26c2bbb8ae78f94fadb2",
+        "revCount": 9,
         "type": "git",
         "url": "ssh://git@github.com/robashton/nixos-install-private"
       },
