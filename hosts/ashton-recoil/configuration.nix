@@ -64,11 +64,15 @@
     ];
   };
 
-  services.xserver.videoDrivers = [ "nvidia" ];
+  services.xserver.videoDrivers = [ "amdgpu" "nvidia" ];
 
    boot.extraModulePackages = with config.boot.kernelPackages; [
     acpi_call
   ];
+
+  boot.extraModprobeConfig = ''
+    options nvidia NVreg_DynamicPowerManagement=0x02
+  '';
 
   boot.kernelModules = [ "nvidia-uvm" "nvidia-drm" "acpi_call" ];
   boot.kernelParams = [ "acpi_backlight=native" ];
@@ -139,6 +143,7 @@
 
   services.udev.extraRules = ''
     SUBSYSTEM=="usb", ATTR{idVendor}=="048d", ATTR{idProduct}=="600b", MODE="0660", GROUP="input"
+    ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{power/control}="auto"
   '';
 
   environment.systemPackages = with pkgs; [
