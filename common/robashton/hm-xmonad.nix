@@ -1,6 +1,48 @@
 { pkgs, ... }:
 {
-  services.dunst.enable = true;
+  services.dunst = {
+    enable = true;
+
+    settings = {
+      global = {
+        font = "Cantarell 11";
+        transparency = 0;
+
+        # Frame + layout
+        frame_width = 2;
+        frame_color = "#ff9ad5";      # default frame (used if urgency-specific not set)
+        separator_color = "frame";
+        padding = 10;
+        horizontal_padding = 12;
+        corner_radius = 10;
+
+        # Icons
+        enable_icons = true;
+        icon_position = "left";
+        # Add your icon dirs if needed:
+        # icon_path = "/home/robashton/.icons:/usr/share/icons";
+      };
+
+      urgency_low = {
+        background = "#fff0fb";  # very light pink
+        foreground = "#5a3050";  # soft plum
+        frame_color = "#ffb3f1"; # pastel pink border
+      };
+
+      urgency_normal = {
+        background = "#f0f6ff";  # soft blue
+        foreground = "#34495e";  # dark slate text
+        frame_color = "#c4b5fd"; # lavender border
+      };
+
+      urgency_critical = {
+        background = "#ffe4e6";  # soft red/pink
+        foreground = "#7f1d1d";  # dark red text
+        frame_color = "#fb7185"; # stronger pink border
+      };
+    };
+  };
+
   xsession.enable = true;
   xsession.windowManager.xmonad = {
     enable = true;

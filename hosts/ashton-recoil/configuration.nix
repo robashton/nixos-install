@@ -12,6 +12,10 @@
       # Common things
       ./../../common
 
+      ./../../common/power.nix
+      ./../../common/fake-laptop-sleep.nix
+      ./../../common/pony-notify.nix
+
       # Hardware & user specific things
       ./robashton
     ];
@@ -75,7 +79,7 @@
   '';
 
   boot.kernelModules = [ "nvidia-uvm" "nvidia-drm" "acpi_call" ];
-  boot.kernelParams = [ "acpi_backlight=native" ];
+  boot.kernelParams = [ "acpi_backlight=native" "s2idle=platform" "usbcore.autosuspend=-1"  ];
 
   environment.etc."X11/xorg.conf.d/20-backlight.conf".text = ''
     Section "Device"
@@ -144,6 +148,8 @@
   services.udev.extraRules = ''
     SUBSYSTEM=="usb", ATTR{idVendor}=="048d", ATTR{idProduct}=="600b", MODE="0660", GROUP="input"
     ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{power/control}="auto"
+    SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="Lid Switch", \
+    ENV{ID_INPUT_SWITCH}="1", ENV{ID_INPUT_SWITCH_TYPE}="lid", TAG+="power-switch"
   '';
 
   environment.systemPackages = with pkgs; [
@@ -164,18 +170,18 @@
     (pkgs.writeShellScriptBin "fn-brightness-up" ''
       #!/usr/bin/env bash
       # Recoil: panel is amdgpu_bl2
-      brightnessctl -d amdgpu_bl2 set +5%
-      BRIGHT=$(brightnessctl -d amdgpu_bl2 get)
+      brightnessctl -d amdgpu_bl1 set +5%
+      BRIGHT=$(brightnessctl -d amdgpu_bl1 get)
       PERCENT=$(( BRIGHT * 100 / 255 ))
-      dunstify -a bright -r 1337 -h "int:value:$PERCENT" "Brightness: $PERCENT"
+      pony-notify Brightness "$PERCENT%"
     '')
 
     (pkgs.writeShellScriptBin "fn-brightness-down" ''
       #!/usr/bin/env bash
-      brightnessctl -d amdgpu_bl2 set 5%-
-      BRIGHT=$(brightnessctl -d amdgpu_bl2 get)
+      brightnessctl -d amdgpu_bl1 set 5%-
+      BRIGHT=$(brightnessctl -d amdgpu_bl1 get)
       PERCENT=$(( BRIGHT * 100 / 255 ))
-      dunstify -a bright -r 1337 -h "int:value:$PERCENT" "Brightness: $PERCENT"
+      pony-notify Brightness "$PERCENT%"
     '')
 
     pkgs.pamixer
@@ -183,21 +189,21 @@
       #!/usr/bin/env bash
       pamixer --increase 5
       VOL=$(pamixer --get-volume)
-      dunstify -a volume -r 1338 -h "int:value:$VOL" "Volume: $VOL"
+      pony-notify Volume "$VOL%"
     '')
 
     (pkgs.writeShellScriptBin "fn-volume-down" ''
       #!/usr/bin/env bash
       pamixer --decrease 5
       VOL=$(pamixer --get-volume)
-      dunstify -a volume -r 1338 -h "int:value:$VOL" "Volume: $VOL"
+      pony-notify Volume "$VOL%"
     '')
 
     (pkgs.writeShellScriptBin "fn-volume-mute" ''
       #!/usr/bin/env bash
       pamixer --toggle-mute
       VOL=$(pamixer --get-mute)
-      dunstify -a volume -r 1338 "Muted: $VOL"
+      pony-notify Muted "$VOL"
       '')
 
     (pkgs.writeShellScriptBin "fn-kb-up" ''
