@@ -30,8 +30,30 @@
 
   networking.hostName = "ashton-recoil"; # Define your hostname.
 
+  networking.firewall = {
+    trustedInterfaces = [];
+    allowedTCPPorts = [
+      22    # SSH
+      8080  # dev
+      8443
+      6791
+      8000
+    ];
+
+    allowedUDPPorts = [];
+
+    allowedUDPPortRanges = [];
+
+  };
+
   # Enable networking
-  networking.networkmanager.enable = true;
+  networking.networkmanager = { 
+    enable = true;
+    plugins = [
+      pkgs.networkmanager-l2tp
+      pkgs.networkmanager-strongswan # For IPsec part of L2TP
+    ];
+  };
 
   # Set your time zone.
   time.timeZone = "Europe/London";
@@ -72,13 +94,14 @@
 
    boot.extraModulePackages = with config.boot.kernelPackages; [
     acpi_call
+    tuxedo-keyboard  # provides ite_8291_lb for lightbar control
   ];
 
   boot.extraModprobeConfig = ''
     options nvidia NVreg_DynamicPowerManagement=0x02
   '';
 
-  boot.kernelModules = [ "nvidia-uvm" "nvidia-drm" "acpi_call" ];
+  boot.kernelModules = [ "nvidia-uvm" "nvidia-drm" "acpi_call" "ite_8291_lb" ];
   boot.kernelParams = [ "acpi_backlight=native" "s2idle=platform" "usbcore.autosuspend=-1"  ];
 
   environment.etc."X11/xorg.conf.d/20-backlight.conf".text = ''
@@ -124,7 +147,7 @@
   users.users.robashton = {
     isNormalUser = true;
     description = "Rob Ashton";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "input" ];
     packages = with pkgs; [
     ];
   };
@@ -140,13 +163,27 @@
             # Use your actual keyboard PID (048d:600b) instead of the old 0xce00
             substituteInPlace aucc/main.py \
               --replace "product_id=0xce00" "product_id=0x600b"
+
+            # Remove the root check - we have proper udev rules for device access
+            substituteInPlace aucc/main.py \
+              --replace "from elevate import elevate" "" \
+              --replace "if not os.geteuid() == 0:" "if False:" \
+              --replace "elevate()" "pass"
           '';
         });
       })
   ];
 
   services.udev.extraRules = ''
-    SUBSYSTEM=="usb", ATTR{idVendor}=="048d", ATTR{idProduct}=="600b", MODE="0660", GROUP="input"
+    # Keyboard LED controller - USB device
+    SUBSYSTEM=="usb", ATTR{idVendor}=="048d", ATTR{idProduct}=="600b", TAG+="uaccess"
+    # Keyboard LED controller - hidraw device (aucc uses hidraw, not USB directly)
+    SUBSYSTEM=="hidraw", ATTRS{idVendor}=="048d", ATTRS{idProduct}=="600b", TAG+="uaccess"
+    # Lightbar LED controller - USB device
+    SUBSYSTEM=="usb", ATTR{idVendor}=="048d", ATTR{idProduct}=="7001", TAG+="uaccess"
+    # Lightbar LED controller - hidraw device
+    SUBSYSTEM=="hidraw", ATTRS{idVendor}=="048d", ATTRS{idProduct}=="7001", TAG+="uaccess"
+    SUBSYSTEM=="leds", KERNEL=="rgb:lightbar", RUN+="${pkgs.coreutils}/bin/chmod 0666 /sys/class/leds/rgb:lightbar/brightness /sys/class/leds/rgb:lightbar/multi_intensity"
     ACTION=="add", SUBSYSTEM=="pci", ATTR{vendor}=="0x10de", ATTR{power/control}="auto"
     SUBSYSTEM=="input", KERNEL=="event*", ATTRS{name}=="Lid Switch", \
     ENV{ID_INPUT_SWITCH}="1", ENV{ID_INPUT_SWITCH_TYPE}="lid", TAG+="power-switch"
@@ -208,15 +245,128 @@
 
     (pkgs.writeShellScriptBin "fn-kb-up" ''
       #!/usr/bin/env bash
-      aucc -b 4 
+      aucc -b 4
+      # Lightbar on (white, full brightness)
+      echo "255 255 255" > /sys/class/leds/rgb:lightbar/multi_intensity 2>/dev/null
+      echo 100 > /sys/class/leds/rgb:lightbar/brightness 2>/dev/null
       '')
 
     (pkgs.writeShellScriptBin "fn-kb-down" ''
       #!/usr/bin/env bash
-      aucc -b 1 
+      aucc -b 1
+      # Lightbar off
+      echo 0 > /sys/class/leds/rgb:lightbar/brightness 2>/dev/null
       '')
-    
+
+    (pkgs.writeShellScriptBin "aucc-cpu-monitor" ''
+      #!/usr/bin/env bash
+      # Get CPU usage from /proc/stat
+      read -r cpu user nice system idle iowait irq softirq _rest < /proc/stat
+      TOTAL1=$((user + nice + system + idle + iowait + irq + softirq))
+      IDLE1=$idle
+      sleep 1
+      read -r cpu user nice system idle iowait irq softirq _rest < /proc/stat
+      TOTAL2=$((user + nice + system + idle + iowait + irq + softirq))
+      IDLE2=$idle
+
+      TOTAL_DIFF=$((TOTAL2 - TOTAL1))
+      IDLE_DIFF=$((IDLE2 - IDLE1))
+
+      if [ "$TOTAL_DIFF" -gt 0 ]; then
+        CPU=$((100 * (TOTAL_DIFF - IDLE_DIFF) / TOTAL_DIFF))
+      else
+        CPU=0
+      fi
+
+      LIGHTBAR="/sys/class/leds/rgb:lightbar"
+
+      if [ "$CPU" -lt 20 ]; then
+        aucc -H green darkgreen -b 1
+        echo "0 255 0" > $LIGHTBAR/multi_intensity 2>/dev/null
+        echo 25 > $LIGHTBAR/brightness 2>/dev/null
+      elif [ "$CPU" -lt 40 ]; then
+        aucc -H green darkgreen -b 2
+        echo "0 255 0" > $LIGHTBAR/multi_intensity 2>/dev/null
+        echo 50 > $LIGHTBAR/brightness 2>/dev/null
+      elif [ "$CPU" -lt 60 ]; then
+        aucc -H yellow orange -b 3
+        echo "255 255 0" > $LIGHTBAR/multi_intensity 2>/dev/null
+        echo 75 > $LIGHTBAR/brightness 2>/dev/null
+      elif [ "$CPU" -lt 80 ]; then
+        aucc -H orange red -b 3
+        echo "255 128 0" > $LIGHTBAR/multi_intensity 2>/dev/null
+        echo 75 > $LIGHTBAR/brightness 2>/dev/null
+      else
+        aucc -H red orange -b 4
+        echo "255 0 0" > $LIGHTBAR/multi_intensity 2>/dev/null
+        echo 100 > $LIGHTBAR/brightness 2>/dev/null
+      fi
+      '')
+
   ];
+
+  # CPU monitor keyboard + lightbar service
+  systemd.user.services.aucc-cpu-monitor = {
+    description = "AUCC CPU Monitor - keyboard and lightbar show CPU usage";
+    wantedBy = [ "graphical-session.target" ];
+    after = [ "graphical-session.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.writeShellScript "aucc-cpu-monitor-exec" ''
+        # Get CPU usage from /proc/stat
+        read -r cpu user nice system idle iowait irq softirq _rest < /proc/stat
+        TOTAL1=$((user + nice + system + idle + iowait + irq + softirq))
+        IDLE1=$idle
+        sleep 1
+        read -r cpu user nice system idle iowait irq softirq _rest < /proc/stat
+        TOTAL2=$((user + nice + system + idle + iowait + irq + softirq))
+        IDLE2=$idle
+
+        TOTAL_DIFF=$((TOTAL2 - TOTAL1))
+        IDLE_DIFF=$((IDLE2 - IDLE1))
+
+        if [ "$TOTAL_DIFF" -gt 0 ]; then
+          CPU=$((100 * (TOTAL_DIFF - IDLE_DIFF) / TOTAL_DIFF))
+        else
+          CPU=0
+        fi
+
+        LIGHTBAR="/sys/class/leds/rgb:lightbar"
+
+        if [ "$CPU" -lt 20 ]; then
+          ${pkgs.avell-unofficial-control-center}/bin/aucc -H green darkgreen -b 1
+          echo "0 255 0" > $LIGHTBAR/multi_intensity 2>/dev/null
+          echo 25 > $LIGHTBAR/brightness 2>/dev/null
+        elif [ "$CPU" -lt 40 ]; then
+          ${pkgs.avell-unofficial-control-center}/bin/aucc -H green darkgreen -b 2
+          echo "0 255 0" > $LIGHTBAR/multi_intensity 2>/dev/null
+          echo 50 > $LIGHTBAR/brightness 2>/dev/null
+        elif [ "$CPU" -lt 60 ]; then
+          ${pkgs.avell-unofficial-control-center}/bin/aucc -H yellow orange -b 3
+          echo "255 255 0" > $LIGHTBAR/multi_intensity 2>/dev/null
+          echo 75 > $LIGHTBAR/brightness 2>/dev/null
+        elif [ "$CPU" -lt 80 ]; then
+          ${pkgs.avell-unofficial-control-center}/bin/aucc -H orange red -b 3
+          echo "255 128 0" > $LIGHTBAR/multi_intensity 2>/dev/null
+          echo 75 > $LIGHTBAR/brightness 2>/dev/null
+        else
+          ${pkgs.avell-unofficial-control-center}/bin/aucc -H red orange -b 4
+          echo "255 0 0" > $LIGHTBAR/multi_intensity 2>/dev/null
+          echo 100 > $LIGHTBAR/brightness 2>/dev/null
+        fi
+      ''}";
+    };
+  };
+
+  systemd.user.timers.aucc-cpu-monitor = {
+    description = "Run AUCC CPU Monitor every 2 seconds";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = "10s";
+      OnUnitActiveSec = "2s";
+      AccuracySec = "1s";
+    };
+  };
 
   # List services that you want to enable:
 

@@ -264,6 +264,7 @@ in
 
   # And thunderbolt things
   services.hardware.bolt.enable = true;
+  hardware.nvidia-container-toolkit.enable = true;
 
 ##  services.jack = {
 ##    jackd.enable = true;
