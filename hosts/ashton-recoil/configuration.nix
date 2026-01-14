@@ -102,7 +102,7 @@
   '';
 
   boot.kernelModules = [ "nvidia-uvm" "nvidia-drm" "acpi_call" "ite_8291_lb" ];
-  boot.kernelParams = [ "acpi_backlight=native" "s2idle=platform" "usbcore.autosuspend=-1"  ];
+  boot.kernelParams = [ "acpi_backlight=native" "s2idle=platform" "usbcore.autosuspend=-1" "amdgpu.dcdebugmask=0x10" "amdgpu.gpu_recovery=1" ];
 
   environment.etc."X11/xorg.conf.d/20-backlight.conf".text = ''
     Section "Device"
