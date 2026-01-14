@@ -87,11 +87,11 @@
               [
                  ((0                         , xF86XK_AudioRaiseVolume), spawn "fn-volume-up")
                , ((0                         , xF86XK_AudioLowerVolume), spawn "fn-volume-down")
-               , ((0                         , xF86XK_KbdBrightnessDown), spawn "fn-kb-down")
-               , ((0                         , xF86XK_KbdBrightnessUp),   spawn "fn-kb-up")
+               -- Lightbar brightness (Mod+PgUp/PgDown) - keyboard brightness is hardware-controlled
+               , (((modMask originalConfig)  , xK_Page_Up),              spawn "fn-lightbar-up")
+               , (((modMask originalConfig)  , xK_Page_Down),            spawn "fn-lightbar-down")
                , ((0                         , xF86XK_MonBrightnessDown), spawn "fn-brightness-down")
                , ((0                         , xF86XK_MonBrightnessUp),   spawn "fn-brightness-up")
-               , ((0                         , xF86XK_KbdLightOnOff), spawn "fn-kb-toggle")
                , ((0                         , xF86XK_AudioMute),        spawn "fn-volume-mute")
                , ((0                         , xF86XK_AudioNext),        spawn "${pkgs.playerctl}/bin/playerctl next")
                , ((0                         , xF86XK_AudioPrev),        spawn "${pkgs.playerctl}/bin/playerctl previous")

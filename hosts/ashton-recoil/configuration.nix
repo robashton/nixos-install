@@ -243,19 +243,46 @@
       pony-notify Muted "$VOL"
       '')
 
-    (pkgs.writeShellScriptBin "fn-kb-up" ''
+    (pkgs.writeShellScriptBin "fn-lightbar-up" ''
       #!/usr/bin/env bash
-      aucc -b 4
-      # Lightbar on (white, full brightness)
-      echo "255 255 255" > /sys/class/leds/rgb:lightbar/multi_intensity 2>/dev/null
-      echo 100 > /sys/class/leds/rgb:lightbar/brightness 2>/dev/null
+      BRIGHTNESS_FILE="$XDG_RUNTIME_DIR/lightbar-brightness"
+
+      # Read current or default to 50
+      if [ -f "$BRIGHTNESS_FILE" ]; then
+        read -r LB < "$BRIGHTNESS_FILE"
+      else
+        LB=50
+      fi
+      # Increment (max 100)
+      [ "$LB" -lt 100 ] && LB=$((LB + 25))
+      [ "$LB" -gt 100 ] && LB=100
+      echo "$LB" > "$BRIGHTNESS_FILE"
+
+      # Trigger instant apply
+      systemctl --user start aucc-apply-brightness.service
+
+      pony-notify Lightbar "$LB%"
       '')
 
-    (pkgs.writeShellScriptBin "fn-kb-down" ''
+    (pkgs.writeShellScriptBin "fn-lightbar-down" ''
       #!/usr/bin/env bash
-      aucc -b 1
-      # Lightbar off
-      echo 0 > /sys/class/leds/rgb:lightbar/brightness 2>/dev/null
+      BRIGHTNESS_FILE="$XDG_RUNTIME_DIR/lightbar-brightness"
+
+      # Read current or default to 50
+      if [ -f "$BRIGHTNESS_FILE" ]; then
+        read -r LB < "$BRIGHTNESS_FILE"
+      else
+        LB=50
+      fi
+      # Decrement (min 0)
+      [ "$LB" -gt 0 ] && LB=$((LB - 25))
+      [ "$LB" -lt 0 ] && LB=0
+      echo "$LB" > "$BRIGHTNESS_FILE"
+
+      # Trigger instant apply
+      systemctl --user start aucc-apply-brightness.service
+
+      pony-notify Lightbar "$LB%"
       '')
 
     (pkgs.writeShellScriptBin "aucc-cpu-monitor" ''
@@ -279,33 +306,57 @@
       fi
 
       LIGHTBAR="/sys/class/leds/rgb:lightbar"
+      BRIGHTNESS_FILE="$XDG_RUNTIME_DIR/lightbar-brightness"
+      STATE_FILE="$XDG_RUNTIME_DIR/lighting-state"
 
-      if [ "$CPU" -lt 20 ]; then
-        aucc -H green darkgreen -b 1
-        echo "0 255 0" > $LIGHTBAR/multi_intensity 2>/dev/null
-        echo 25 > $LIGHTBAR/brightness 2>/dev/null
-      elif [ "$CPU" -lt 40 ]; then
-        aucc -H green darkgreen -b 2
-        echo "0 255 0" > $LIGHTBAR/multi_intensity 2>/dev/null
-        echo 50 > $LIGHTBAR/brightness 2>/dev/null
-      elif [ "$CPU" -lt 60 ]; then
-        aucc -H yellow orange -b 3
-        echo "255 255 0" > $LIGHTBAR/multi_intensity 2>/dev/null
-        echo 75 > $LIGHTBAR/brightness 2>/dev/null
-      elif [ "$CPU" -lt 80 ]; then
-        aucc -H orange red -b 3
-        echo "255 128 0" > $LIGHTBAR/multi_intensity 2>/dev/null
-        echo 75 > $LIGHTBAR/brightness 2>/dev/null
+      # Read lightbar brightness preference (default: 50)
+      if [ -f "$BRIGHTNESS_FILE" ]; then
+        read -r LB_BRIGHT < "$BRIGHTNESS_FILE"
       else
-        aucc -H red orange -b 4
-        echo "255 0 0" > $LIGHTBAR/multi_intensity 2>/dev/null
-        echo 100 > $LIGHTBAR/brightness 2>/dev/null
+        LB_BRIGHT=50
+      fi
+
+      # Determine colors based on CPU usage
+      # Blue+green at idle, adding red as CPU increases
+      if [ "$CPU" -lt 20 ]; then
+        COLOR1="blue"; COLOR2="green"
+        RGB_R=0; RGB_G=200; RGB_B=255
+      elif [ "$CPU" -lt 40 ]; then
+        COLOR1="teal"; COLOR2="lightgreen"
+        RGB_R=64; RGB_G=180; RGB_B=200
+      elif [ "$CPU" -lt 60 ]; then
+        COLOR1="purple"; COLOR2="yellow"
+        RGB_R=160; RGB_G=140; RGB_B=180
+      elif [ "$CPU" -lt 80 ]; then
+        COLOR1="purple"; COLOR2="orange"
+        RGB_R=200; RGB_G=80; RGB_B=140
+      else
+        COLOR1="violet"; COLOR2="red"
+        RGB_R=255; RGB_G=40; RGB_B=100
+      fi
+
+      # Build new state string (colors + lightbar brightness)
+      NEW_STATE="$COLOR1 $COLOR2 $RGB_R $RGB_G $RGB_B $LB_BRIGHT"
+
+      # Read previous state
+      OLD_STATE=""
+      if [ -f "$STATE_FILE" ]; then
+        OLD_STATE=$(cat "$STATE_FILE")
+      fi
+
+      # Only update hardware if state changed
+      if [ "$NEW_STATE" != "$OLD_STATE" ]; then
+        aucc -H $COLOR1 $COLOR2
+        echo "$RGB_R $RGB_G $RGB_B" > $LIGHTBAR/multi_intensity 2>/dev/null
+        echo $LB_BRIGHT > $LIGHTBAR/brightness 2>/dev/null
+        echo "$NEW_STATE" > "$STATE_FILE"
       fi
       '')
 
   ];
 
   # CPU monitor keyboard + lightbar service
+  # Note: Keyboard brightness is hardware-controlled (Fn keys), software only sets colors
   systemd.user.services.aucc-cpu-monitor = {
     description = "AUCC CPU Monitor - keyboard and lightbar show CPU usage";
     wantedBy = [ "graphical-session.target" ];
@@ -332,28 +383,86 @@
         fi
 
         LIGHTBAR="/sys/class/leds/rgb:lightbar"
+        BRIGHTNESS_FILE="$XDG_RUNTIME_DIR/lightbar-brightness"
+        STATE_FILE="$XDG_RUNTIME_DIR/lighting-state"
 
-        if [ "$CPU" -lt 20 ]; then
-          ${pkgs.avell-unofficial-control-center}/bin/aucc -H green darkgreen -b 1
-          echo "0 255 0" > $LIGHTBAR/multi_intensity 2>/dev/null
-          echo 25 > $LIGHTBAR/brightness 2>/dev/null
-        elif [ "$CPU" -lt 40 ]; then
-          ${pkgs.avell-unofficial-control-center}/bin/aucc -H green darkgreen -b 2
-          echo "0 255 0" > $LIGHTBAR/multi_intensity 2>/dev/null
-          echo 50 > $LIGHTBAR/brightness 2>/dev/null
-        elif [ "$CPU" -lt 60 ]; then
-          ${pkgs.avell-unofficial-control-center}/bin/aucc -H yellow orange -b 3
-          echo "255 255 0" > $LIGHTBAR/multi_intensity 2>/dev/null
-          echo 75 > $LIGHTBAR/brightness 2>/dev/null
-        elif [ "$CPU" -lt 80 ]; then
-          ${pkgs.avell-unofficial-control-center}/bin/aucc -H orange red -b 3
-          echo "255 128 0" > $LIGHTBAR/multi_intensity 2>/dev/null
-          echo 75 > $LIGHTBAR/brightness 2>/dev/null
+        # Read lightbar brightness preference (default: 50)
+        if [ -f "$BRIGHTNESS_FILE" ]; then
+          read -r LB_BRIGHT < "$BRIGHTNESS_FILE"
         else
-          ${pkgs.avell-unofficial-control-center}/bin/aucc -H red orange -b 4
-          echo "255 0 0" > $LIGHTBAR/multi_intensity 2>/dev/null
-          echo 100 > $LIGHTBAR/brightness 2>/dev/null
+          LB_BRIGHT=50
         fi
+
+        # Determine colors based on CPU usage
+        # Blue+green at idle, adding red as CPU increases
+        if [ "$CPU" -lt 20 ]; then
+          COLOR1="blue"; COLOR2="green"
+          RGB_R=0; RGB_G=200; RGB_B=255
+        elif [ "$CPU" -lt 40 ]; then
+          COLOR1="teal"; COLOR2="lightgreen"
+          RGB_R=64; RGB_G=180; RGB_B=200
+        elif [ "$CPU" -lt 60 ]; then
+          COLOR1="purple"; COLOR2="yellow"
+          RGB_R=160; RGB_G=140; RGB_B=180
+        elif [ "$CPU" -lt 80 ]; then
+          COLOR1="purple"; COLOR2="orange"
+          RGB_R=200; RGB_G=80; RGB_B=140
+        else
+          COLOR1="violet"; COLOR2="red"
+          RGB_R=255; RGB_G=40; RGB_B=100
+        fi
+
+        # Build new state string (colors + lightbar brightness)
+        NEW_STATE="$COLOR1 $COLOR2 $RGB_R $RGB_G $RGB_B $LB_BRIGHT"
+
+        # Read previous state
+        OLD_STATE=""
+        if [ -f "$STATE_FILE" ]; then
+          OLD_STATE=$(cat "$STATE_FILE")
+        fi
+
+        # Only update hardware if state changed
+        if [ "$NEW_STATE" != "$OLD_STATE" ]; then
+          ${pkgs.avell-unofficial-control-center}/bin/aucc -H $COLOR1 $COLOR2
+          echo "$RGB_R $RGB_G $RGB_B" > $LIGHTBAR/multi_intensity 2>/dev/null
+          echo $LB_BRIGHT > $LIGHTBAR/brightness 2>/dev/null
+          echo "$NEW_STATE" > "$STATE_FILE"
+        fi
+      ''}";
+    };
+  };
+
+  # Instant lightbar brightness apply - no CPU calculation, just apply new brightness
+  systemd.user.services.aucc-apply-brightness = {
+    description = "Apply lightbar brightness immediately";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.writeShellScript "aucc-apply-brightness-exec" ''
+        LIGHTBAR="/sys/class/leds/rgb:lightbar"
+        BRIGHTNESS_FILE="$XDG_RUNTIME_DIR/lightbar-brightness"
+        STATE_FILE="$XDG_RUNTIME_DIR/lighting-state"
+
+        # Read lightbar brightness preference (default: 50)
+        if [ -f "$BRIGHTNESS_FILE" ]; then
+          read -r LB_BRIGHT < "$BRIGHTNESS_FILE"
+        else
+          LB_BRIGHT=50
+        fi
+
+        # Read colors from state file, or use defaults
+        if [ -f "$STATE_FILE" ]; then
+          read -r COLOR1 COLOR2 RGB_R RGB_G RGB_B _ < "$STATE_FILE"
+        else
+          COLOR1="blue"; COLOR2="green"
+          RGB_R=0; RGB_G=200; RGB_B=255
+        fi
+
+        # Apply lightbar brightness (keyboard brightness is hardware-controlled)
+        echo "$RGB_R $RGB_G $RGB_B" > $LIGHTBAR/multi_intensity 2>/dev/null
+        echo $LB_BRIGHT > $LIGHTBAR/brightness 2>/dev/null
+
+        # Update state file with new brightness
+        echo "$COLOR1 $COLOR2 $RGB_R $RGB_G $RGB_B $LB_BRIGHT" > "$STATE_FILE"
       ''}";
     };
   };
