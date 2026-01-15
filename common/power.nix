@@ -72,6 +72,71 @@
     pkgs.powertop
   ];
 
+
+  #### Terminal transparency toggle based on power state ####
+  # On AC: transparent (0.8), On battery: opaque (1.0) to save GPU power
+  # Devices without batteries always report AC, so stay transparent
+
+  environment.etc."power-opacity-update.sh" = {
+    mode = "0755";
+    text = ''
+      #!/bin/sh
+      # Determine if on AC power (any AC adapter online = on AC)
+      ON_AC=0
+      FOUND_AC=0
+
+      for ac in /sys/class/power_supply/*; do
+        if [ -f "$ac/type" ] && [ "$(cat "$ac/type")" = "Mains" ]; then
+          FOUND_AC=1
+          if [ -f "$ac/online" ] && [ "$(cat "$ac/online")" = "1" ]; then
+            ON_AC=1
+            break
+          fi
+        fi
+      done
+
+      # No AC adapters found = desktop = always "on AC"
+      if [ "$FOUND_AC" = "0" ]; then
+        ON_AC=1
+      fi
+
+      if [ "$ON_AC" = "1" ]; then
+        OPACITY="0.8"
+      else
+        OPACITY="1.0"
+      fi
+
+      # Update power.toml for each user with an alacritty config dir
+      for home in /home/*; do
+        user=$(basename "$home")
+        config_dir="$home/.config/alacritty"
+        power_file="$config_dir/power.toml"
+
+        if [ -d "$config_dir" ]; then
+          echo "[window]" > "$power_file"
+          echo "opacity = $OPACITY" >> "$power_file"
+          chown "$user:users" "$power_file" 2>/dev/null || true
+        fi
+      done
+    '';
+  };
+
+  # Trigger on AC adapter plug/unplug
+  services.udev.extraRules = ''
+    SUBSYSTEM=="power_supply", ATTR{type}=="Mains", RUN+="${pkgs.bash}/bin/bash /etc/power-opacity-update.sh"
+  '';
+
+  # Run once at boot to set initial state
+  systemd.services.power-opacity-init = {
+    description = "Set terminal opacity based on power state";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "systemd-udev-settle.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.bash}/bin/bash /etc/power-opacity-update.sh";
+    };
+  };
+
 }
 
 

@@ -1,5 +1,6 @@
 [general]
 live_config_reload = true
+import = ["/home/robashton/.config/alacritty/power.toml"]
 
 [bell]
 animation = "EaseOutExpo"
