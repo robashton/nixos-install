@@ -18,11 +18,9 @@
       ./robashton
     ];
 
-  fonts = {
-    fontconfig = {
-      antialias = true;
-    };
-  };
+  # This box is headless: an SSH jump host and a GitHub Actions runner. No X,
+  # no GNOME, no browsers, no Steam. See common/desktop.nix.
+  id3as.desktop.enable = false;
 
   # Plugged right into the router now
   networking.interfaces.enp5s0.useDHCP = true;
@@ -59,27 +57,8 @@
     ];
   };
 
-  hardware.bluetooth.enable = true;
-  services.blueman.enable = true;
-
   # Open ports in the firewall.
   networking.firewall.allowPing = true;
-
-  services.xserver.layout = "us";
-  services.xserver.autorun = false;
-
-
-#  services.xserver.videoDrivers = lib.mkForce [];
-#  services.drivers = [
-#    ({ driverName = ''modesetting" BusID "PCI:0:2:0'';
-#    name = "intel";
-#    modules = [pkgs.xorg.xf86videomodesetting];
-#  })
-#  ];
-
-  services.xserver.videoDrivers = [ "admgpu" ];
-
-  boot.kernelModules = [ "intel-drm" ];
 
   networking.firewall = {
     trustedInterfaces = [ "enp5s0" ];
@@ -95,19 +74,31 @@
 
   };
 
+  # No nvidia hardware in this box (Intel HD 630 + AMD Vega M), so the
+  # toolkit enabled in common/ just trips an assertion here.
+  hardware.nvidia-container-toolkit.enable = lib.mkForce false;
+
+  # The root partition is small (118G) and CI fills it with product images,
+  # so keep docker's data on the roomy /home partition instead.
+  virtualisation.docker.daemon.settings = {
+    data-root = "/home/docker";
+    # system.stateVersion is unset for this host, so this would otherwise
+    # silently flip to false on 25.11 and kill containers on daemon restart.
+    live-restore = true;
+  };
+
   nixpkgs.config.allowUnfree = true;
 #  nixpkgs.config.packageOverrides = pkgs: {
 #    vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
 #  };
 
-  # VAAPI
+  # VAAPI. Kept because the CI runner does video work; enable32Bit is gone with
+  # Steam, since nothing headless wants a 32-bit mesa stack.
   # https://nixos.wiki/wiki/Accelerated_Video_Playback
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
-    driSupport = true;
-    driSupport32Bit = true;
     extraPackages = with pkgs; [
-      vaapiIntel
+      intel-vaapi-driver
       (pkgs.intel-media-driver.overrideAttrs (oldAttrs: {
         name = "intel-media-driver";
         postFixup = ''
@@ -119,5 +110,4 @@
   };
   hardware.enableRedistributableFirmware = true;
   hardware.enableAllFirmware = true;
-  services.xserver.xkbOptions = "altwin:swap_alt_win, ctrl:swapcaps";
 }

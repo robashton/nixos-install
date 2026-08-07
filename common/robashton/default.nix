@@ -31,5 +31,8 @@ in
     ];
   };
 
-  home-manager.users.robashton = import ./hm.nix { inherit pkgs lib private; };
+  home-manager.users.robashton = import ./hm.nix {
+    inherit pkgs lib private;
+    desktop = config.id3as.desktop.enable;
+  };
 }

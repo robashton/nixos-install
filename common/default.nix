@@ -12,50 +12,17 @@ let
 #    };
 #  });
 
-  discord_latest = pkgs.discord.overrideAttrs (oldArtrs: {
-    src = builtins.fetchTarball {
-      url ="https://stable.dl2.discordapp.net/apps/linux/0.0.76/discord-0.0.76.tar.gz";
-      sha256 = "1xgkbz4llj6sd9p0zzdxm2w4niv03nnd7kjbbbl004xndlf2adcw";
-    };
-  });
-
   pls = pkgs.nodePackages.purescript-language-server.override {
     version = "0.15.0";
     src = builtins.fetchurl {
       url = "https://registry.npmjs.org/purescript-language-server/-/purescript-language-server-0.15.0.tgz";
     };
   };
-
-
-   dbus-sway-environment = pkgs.writeTextFile {
-    name = "dbus-sway-environment";
-    destination = "/bin/dbus-sway-environment";
-    executable = true;
-
-    text = ''
-  dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
-  systemctl --user stop pipewire pipewire-media-session xdg-desktop-portal xdg-desktop-portal-wlr
-  systemctl --user start pipewire pipewire-media-session xdg-desktop-portal xdg-desktop-portal-wlr
-      '';
-  };
-
-  configure-gtk = pkgs.writeTextFile {
-      name = "configure-gtk";
-      destination = "/bin/configure-gtk";
-      executable = true;
-      text = let
-        schema = pkgs.gsettings-desktop-schemas;
-        datadir = "${schema}/share/gsettings-schemas/${schema.name}";
-      in ''
-        export XDG_DATA_DIRS=${datadir}:$XDG_DATA_DIRS
-        gnome_schema=org.gnome.desktop.interface
-        gsettings set $gnome_schema gtk-theme 'Dracula'
-        '';
-  };
 in
 {
   imports =
     [
+      ./desktop.nix
       ./robashton
       ./stears
       ./nicholaw
@@ -81,13 +48,15 @@ in
   # popups
   time.timeZone = "Europe/London";
 
-  location.latitude = 55.8;
-  location.longitude = 4.2;
-  services.redshift = {
-    enable = true;
-  };
-
   nix.settings.auto-optimise-store = true;
+
+  # Nothing was ever collectable here: generations going back years pinned
+  # essentially the whole store, so plain nix-collect-garbage freed nothing.
+  nix.gc = {
+    automatic = true;
+    dates = "daily";
+    options = "--delete-older-than 7d";
+  };
 
   environment.interactiveShellInit = ''
     alias vi='nvim'
@@ -107,33 +76,14 @@ in
 
 
 
-  programs.steam.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    pulse.enable = true;
-  };
-
   environment.systemPackages = with pkgs; [
-    gnome-settings-daemon
-
-    # Copied and pasted from the nixos sway docs
-
     # Admin & Development Tools
     wget
     silver-searcher
 
-    wine
-
     networkmanager-l2tp
     strongswan
 
-    sonic-pi
-    appimage-run
-
-    # okular
-    # dropbox-cli
-    pavucontrol
     openssh
     git git-lfs
     tmux
@@ -142,7 +92,6 @@ in
     lftp
     tree
     bash-completion
-    wireshark
     wireshark-cli
     iperf
     pv
@@ -161,74 +110,15 @@ in
     nixops_unstable_minimal
     gccStdenv
 
-    motion
-
     # Docker - until I can obviate it
     docker
     docker-gc
     docker-ls
 
-    obs-studio
-
-    # General web things
-    firefox-bin
-    google-chrome
-#    skypeforlinux_latest
-    slack
-    discord_latest
-    #teams # dead :(
-    zoom-us
-
     # Security
     gnupg
     srm
     #keepassxc
-
-    # Desktop Env
-#    gnome3.dconf
-#    gnome3.dconf-editor
-    gnome-screenshot
-    mate.mate-calc
-    dmenu
-    xclip
-#    alacritty
-    termite
-    feh
-    libreoffice-still
-
-    brightnessctl
-
-    # Wayland stuff
-    wl-clipboard
-
-
-    # Hardware Acceleration Utilities
-    libva-utils
-    mesa-demos
-
-    ( writeScriptBin "ra-audio-get-master-volume" ''
-      #!${pkgs.bash}/bin/bash
-      amixer sget Master | awk -F '[][]' '/.*Left:/ { print $2 }'
-    ''
-    )
-
-    ( writeScriptBin "ra-audio-get-master-status" ''
-      #!${pkgs.bash}/bin/bash
-      amixer sget Master | awk -F '[][]' '/.*Left:/ { print $4 }'
-    ''
-    )
-
-    ( writeScriptBin "ra-audio-get-capture-volume" ''
-       #!${pkgs.bash}/bin/bash
-       amixer sget Capture | awk -F '[][]' '/.*Left:/ { print $2 }'
-    ''
-    )
-
-    ( writeScriptBin "ra-audio-get-capture-status" ''
-       #!${pkgs.bash}/bin/bash
-       amixer sget Capture | awk -F '[][]' '/.*Left:/ { print $4 }'
-    ''
-    )
 
     ( writeScriptBin "id3as-tmux-create" ''
       #!${pkgs.bash}/bin/bash
@@ -255,6 +145,14 @@ in
     docker = {
       enable = true;
       enableOnBoot = false;
+
+      # Volumes are deliberately left alone here; only images/containers
+      # /networks/build cache are pruned.
+      autoPrune = {
+        enable = true;
+        dates = "daily";
+        flags = [ "--all" "--filter" "until=24h" ];
+      };
     };
   };
 
@@ -279,30 +177,6 @@ in
     ssh.forwardX11 = true;
     ssh.setXAuthLocation = true;
 
-    sway = {
-      enable = true;
-      wrapperFeatures.gtk = true; # so that gtk works properly
-      extraPackages = with pkgs; [
-        swaylock
-        swayidle
-        wl-clipboard
-        mako # notification daemon
-        alacritty # Alacritty is the default terminal in the config
-        dmenu # Dmenu is the default in the config but i recommend wofi since its wayland native
-        dbus-sway-environment
-        configure-gtk
-        wayland
-        glib # gsettings
-        dracula-theme # gtk theme
-        # gnome3.adwaita-icon-theme  # default gnome cursors
-        swaylock
-        swayidle
-        grim # screenshot functionality
-        slurp # screenshot functionality
-        bemenu # wayland clone of dmenu
-      ];
-    };
-
     gnupg.agent = {
       enable = true;
       enableSSHSupport = true;
@@ -321,13 +195,6 @@ in
     };
   };
   services.dbus.enable = true;
-  xdg.portal = {
-    enable = true;
-    wlr.enable = true;
-    # gtk portal needed to make gtk apps happy
-    extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-    # gtkUsePortal = true;
-  };
 
   # Enable the OpenSSH daemon.
   services.openssh = {
@@ -379,72 +246,35 @@ in
     '';
 
   # Allow docker0 to bypass the firewall
+  # These must be idempotent: on a reload the chain still exists from the
+  # previous run, and a bare `-N LOGDROP` aborts the whole script, which
+  # leaves nixos-fw unreferenced and the box wide open.
   networking.firewall.extraCommands = ''
     ip46tables -I nixos-fw 1 -i docker0 -j nixos-fw-accept
-    ip46tables -N LOGDROP
+    ip46tables -N LOGDROP 2>/dev/null || true
+    ip46tables -F LOGDROP
     ip46tables -A LOGDROP -j LOG
     ip46tables -A LOGDROP -j DROP
     ip46tables -I INPUT -p tcp --dport 22 -m state --state NEW -m recent --set
     ip46tables -I INPUT -p tcp --dport 22 -m state --state NEW -m recent  --update --seconds 60 --hitcount 4 -j LOGDROP
   '';
 
+  # Without these the INPUT rules above accumulate a duplicate pair on every
+  # reload, and LOGDROP survives to break the next start.
+  # Loop rather than a single -D: duplicates double-count the `recent` hits,
+  # so --hitcount 4 would start locking SSH out after ~2 connections.
+  networking.firewall.extraStopCommands = ''
+    for ipt in iptables ip6tables; do
+      while $ipt -D INPUT -p tcp --dport 22 -m state --state NEW -m recent  --update --seconds 60 --hitcount 4 -j LOGDROP 2>/dev/null; do :; done
+      while $ipt -D INPUT -p tcp --dport 22 -m state --state NEW -m recent --set 2>/dev/null; do :; done
+      $ipt -F LOGDROP 2>/dev/null || true
+      $ipt -X LOGDROP 2>/dev/null || true
+    done
+  '';
+
   networking.dhcpcd.extraConfig = ''
         noipv4ll
       '';
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
-  # Disable that annoying-as-fuck 'SURELY YOU MUST WANT TO USE HDMI AUDIO NOW YOUR MONITOR IS TURNED ON' behaviour
-  # jfc why is that the default fucking hell no
-  hardware.pulseaudio.extraConfig = "unload-module module-switch-on-port-available";
-
-  hardware.pulseaudio.configFile = pkgs.runCommand "default.pa" {} ''
-  sed 's/module-udev-detect$/module-udev-detect tsched=0/' \
-    ${pkgs.pulseaudio}/etc/pulse/default.pa > $out
-'';
-
-
-  # Enable the X11 windowing system.
-  services.xserver = {
-    enable = true;
-
-    displayManager = {
-      gdm.enable = true;
-      defaultSession = "none+xmonad";
-      sessionCommands = ''
-        ${pkgs.feh}/bin/feh --bg-fill ~/.config/wallpapers/rainbow-dash.jpg
-      '';
-    };
-
-    windowManager = {
-      xmonad = {
-        enable = true;
-        enableContribAndExtras = true;
-        extraPackages = haskellPackages: with haskellPackages; [
-          xmobar
-        ];
-      };
-    };
-
-    desktopManager = {
-      gnome.enable = true;
-      xterm.enable = false;
-    };
-  };
-
-  services.compton = {
-    vSync           = true;
-    backend         = "glx";
-    enable          = true;
-    fade            = false;
-    shadow          = false;
-    # inactiveOpacity = "0.9";
-    fadeDelta       = 4;
-    opacityRules    = [
-#      "90:class_g *= 'Alacritty'"
-    ];
-  };
 
    nixpkgs.config.permittedInsecurePackages = [
      "python2.7-PyJWT-1.7.1"

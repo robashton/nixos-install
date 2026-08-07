@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, desktop ? true, ... }:
 
 let
   modules = [
@@ -6,8 +6,11 @@ let
     ./hm-tmux.nix
     ./hm-neovim.nix
     ./hm-git.nix
-    ./hm-xmonad.nix
     ./hm-direnv.nix
+  ] ++ lib.optionals desktop [
+    # xmonad drags in a full GHC (1.8G + 752M of docs) and emacs a GTK stack,
+    # neither of which a headless box has any use for.
+    ./hm-xmonad.nix
     ./hm-emacs.nix
     ./hm-wayland.nix
   ];
@@ -15,7 +18,7 @@ let
 
   moduleResults = builtins.map runModule modules;
 
-  runModule = module: import module { inherit pkgs lib; };
+  runModule = module: import module { inherit pkgs lib desktop; };
 
   combined = builtins.foldl' mergeResult emptyAcc moduleResults;
 

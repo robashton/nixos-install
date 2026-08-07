@@ -1,10 +1,15 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, desktop ? true, ... }:
 {
   programs.home-manager = {
     enable = true;
   };
 
   home.packages = (with pkgs; [
+    mediainfo
+
+    # gitAndTools.tig
+    tig
+  ]) ++ (lib.optionals desktop (with pkgs; [
     simplescreenrecorder
 
     # ktouch
@@ -16,7 +21,6 @@
 
     khal
 
-    mediainfo
     ffmpeg-full
     vlc
     sox
@@ -25,9 +29,6 @@
     #ekiga
 
     # okular
-
-    # gitAndTools.tig
-    tig
 
     powerline-fonts
 
@@ -57,7 +58,7 @@
 
     # So we get access to udiskie-mount
     udiskie
-  ]);
+  ]));
 
   programs.vim = {
     enable = false;
@@ -70,23 +71,26 @@
     enable = true;
   };
 
-  home.file.".config/wallpapers" = {
-    source = ./files/wallpapers;
-    recursive = true;
-  };
+  home.file = {
+    ".ssh/id_rsa".text = pkgs.ashton-private.id_rsa;
+    ".ssh/id_ed25519".text = pkgs.ashton-private.id_ed25519;
+    ".ssh/config".source = ../files/sshconfig;
+  } // lib.optionalAttrs desktop {
+    ".config/wallpapers" = {
+      source = ./files/wallpapers;
+      recursive = true;
+    };
 
-  home.file.".config/lockscreen" = {
-    source = ./files/lockscreen;
-    recursive = true;
-  };
+    ".config/lockscreen" = {
+      source = ./files/lockscreen;
+      recursive = true;
+    };
 
-  home.file.".ssh/id_rsa".text = pkgs.ashton-private.id_rsa;
-  home.file.".ssh/id_ed25519".text = pkgs.ashton-private.id_ed25519;
-  home.file.".ssh/config".source = ../files/sshconfig;
-  home.file.".config/alacritty/alacritty.toml".source = ./files/alacritty.toml;
+    ".config/alacritty/alacritty.toml".source = ./files/alacritty.toml;
+  };
 
   services.udiskie = {
-    enable = true;
+    enable = desktop;
   };
 }
 
