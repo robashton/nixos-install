@@ -16,6 +16,9 @@
 
       # Hardware & user specific things
       ./robashton
+
+      # The CI runner's service user
+      ./jankings
     ];
 
   # This box is headless: an SSH jump host and a GitHub Actions runner. No X,
@@ -78,12 +81,12 @@
   # toolkit enabled in common/ just trips an assertion here.
   hardware.nvidia-container-toolkit.enable = lib.mkForce false;
 
-  # The root partition is small (118G) and CI fills it with product images,
-  # so keep docker's data on the roomy /home partition instead.
+  # Root is the whole disk now (444G), so docker uses the default /var/lib/docker.
+  # The old data-root = "/home/docker" was a workaround for the 118G root, and went
+  # away with the separate home partition.
   virtualisation.docker.daemon.settings = {
-    data-root = "/home/docker";
-    # system.stateVersion is unset for this host, so this would otherwise
-    # silently flip to false on 25.11 and kill containers on daemon restart.
+    # Explicit because the default flips to false at stateVersion 25.11, which would
+    # kill running containers on a daemon restart.
     live-restore = true;
   };
 
@@ -110,4 +113,8 @@
   };
   hardware.enableRedistributableFirmware = true;
   hardware.enableAllFirmware = true;
+
+  # Set per-host rather than in common/, which is shared with ashton-recoil and
+  # ashton-studio — they have their own install histories.
+  system.stateVersion = "25.11";
 }

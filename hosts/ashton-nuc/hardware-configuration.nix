@@ -16,10 +16,8 @@
       fsType = "ext4";
     };
 
-  fileSystems."/home" =
-    { device = "/dev/disk/by-uuid/f8c2c099-c53e-4340-86f0-912f465117d4";
-      fsType = "ext4";
-    };
+  # /home is no longer its own filesystem: the old home partition was deleted and
+  # root grown over it, so the whole disk is one 444G pool shared by nix and docker.
 
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/7C81-4FB8";
