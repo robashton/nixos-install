@@ -19,6 +19,9 @@
 
       # The CI runner's service user
       ./jankings
+
+      # The norsk private binary cache the runner builds against
+      ./norsk-cache
     ];
 
   # This box is headless: an SSH jump host and a GitHub Actions runner. No X,
