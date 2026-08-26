@@ -13,7 +13,7 @@
       ./../../common
 
       ./../../common/power.nix
-      ./../../common/fake-laptop-sleep.nix
+      ./../../common/laptop-suspend.nix
       ./../../common/pony-notify.nix
 
       # Hardware & user specific things
@@ -150,11 +150,13 @@
   boot.blacklistedKernelModules = [ "nouveau" ];
 
   hardware.nvidia.modesetting.enable = true;
-  hardware.nvidia.prime.offload.enable = true;
+  # hardware.nvidia.prime.offload.enable = true;
+  hardware.nvidia.prime.reverseSync.enable = true;  # Enable for HDMI output
   hardware.nvidia.prime.nvidiaBusId = "PCI:1:0:0";
   hardware.nvidia.prime.amdgpuBusId = "PCI:6:0:0";
   hardware.nvidia.nvidiaPersistenced = true;
   hardware.nvidia.open = true;
+  hardware.nvidia.powerManagement.enable = true;  # Use official nvidia suspend/resume scripts
 
   # Configure keymap in X11
   services.xserver.xkb = {
