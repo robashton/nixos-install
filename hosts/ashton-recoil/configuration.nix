@@ -18,6 +18,9 @@
 
       # Hardware & user specific things
       ./robashton
+
+      # Reverse SSH tunnel out to ashtonnuc.ddns.net
+      ./reverse-tunnel.nix
     ];
 
   # Bootloader.
