@@ -90,6 +90,38 @@
     ];
   };
 
+  # NetworkManager-l2tp runs `ipsec` outside the strongswan.service context, so it
+  # never sees that service's STRONGSWAN_CONF env var and falls back to reading
+  # /etc/strongswan.conf — which the services.strongswan module doesn't create.
+  # Without it, charon loads no crypto plugins and aborts ("HASH_SHA1 / NONCE_GEN
+  # unmet dependency", surfaced by NM as "integrity test of libstrongswan failed"),
+  # so the vpn-steve L2TP/IPsec connection fails to come up.
+  #
+  # This strongSwan build has no standalone sha1/aes/hmac plugins; it provides all
+  # crypto via the openssl plugin, so we must load plugins explicitly (load_modular
+  # = no) rather than rely on the empty per-plugin conf stubs.
+  environment.etc."strongswan.conf".text = ''
+    charon {
+      load_modular = no
+      load = random nonce openssl gmp pem pkcs1 pkcs8 pubkey x509 revocation constraints kernel-netlink socket-default stroke updown resolve xauth-generic
+
+      install_routes = no
+      install_virtual_ip = no
+
+      plugins {
+        stroke {
+          secrets_file = /etc/ipsec.secrets
+        }
+      }
+    }
+  '';
+
+  nix.settings = {
+    extra-substituters = [ "s3://norsk-binary-cache?region=eu-west-1" ];
+    extra-trusted-public-keys = [ "norsk-cache-1:KwyoUy3m88th8dXuHPbH1Q8Sa8n0ntZBGGcBZB70dSQ=" ];
+    accept-flake-config = true;
+  };
+
   services.xserver.videoDrivers = [ "amdgpu" "nvidia" ];
 
    boot.extraModulePackages = with config.boot.kernelPackages; [
