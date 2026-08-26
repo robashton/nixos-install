@@ -39,6 +39,7 @@
       22    # SSH
       8080  # dev
       8443
+      9443  # norsk-ctl oauth2 proxy (playout dashboard)
       6791
       8000
     ];

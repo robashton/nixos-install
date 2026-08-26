@@ -245,12 +245,16 @@ in
     ExternalSizeMax=20G
     '';
 
-  # Allow docker0 to bypass the firewall
+  # Allow docker0 and user-defined bridges (br-*) to bypass the firewall.
+  # Without the br-+ rule, containers on user-defined networks (e.g. norsk-ctl's
+  # norsk-net) can't reach host services via host-gateway, because the traffic
+  # lands on nixos-fw's INPUT chain and gets refused.
   # These must be idempotent: on a reload the chain still exists from the
   # previous run, and a bare `-N LOGDROP` aborts the whole script, which
   # leaves nixos-fw unreferenced and the box wide open.
   networking.firewall.extraCommands = ''
     ip46tables -I nixos-fw 1 -i docker0 -j nixos-fw-accept
+    ip46tables -I nixos-fw 1 -i br-+ -j nixos-fw-accept
     ip46tables -N LOGDROP 2>/dev/null || true
     ip46tables -F LOGDROP
     ip46tables -A LOGDROP -j LOG
@@ -271,6 +275,21 @@ in
       $ipt -X LOGDROP 2>/dev/null || true
     done
   '';
+
+  # The br-+/docker0 accepts above cover container->host. Same-bridge
+  # container<->container traffic (e.g. norsk-ctl's oauth2-proxy -> nginx ->
+  # studio on a compose network) also needs two things after a reboot, or it
+  # silently fails to connect:
+  #   1. bridge-nf-call-iptables=0 so L2 frames switched within a bridge are NOT
+  #      pushed up through the host's iptables/rpfilter path at all.
+  #   2. reverse-path filtering in "loose" mode so the asymmetric return legs of
+  #      inter-container flows aren't dropped (the bridges default to rp_filter=2).
+  boot.kernelModules = [ "br_netfilter" ];
+  boot.kernel.sysctl = {
+    "net.bridge.bridge-nf-call-iptables" = 0;
+    "net.bridge.bridge-nf-call-ip6tables" = 0;
+  };
+  networking.firewall.checkReversePath = "loose";
 
   networking.dhcpcd.extraConfig = ''
         noipv4ll
