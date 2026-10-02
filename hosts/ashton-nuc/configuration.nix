@@ -28,6 +28,10 @@
   # no GNOME, no browsers, no Steam. See common/desktop.nix.
   id3as.desktop.enable = false;
 
+  # Steve gets passwordless sudo on this box only (wheel is NOPASSWD in
+  # common); common/steve stays non-admin on every other host.
+  users.users.steve.extraGroups = [ "wheel" ];
+
   # Plugged right into the router now
   networking.interfaces.enp5s0.useDHCP = true;
   # networking.interfaces.enp5s0.ipv4.addresses = [ {
