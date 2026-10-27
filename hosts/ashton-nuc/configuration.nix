@@ -42,6 +42,24 @@
 
   hardware.cpu.intel.updateMicrocode = true;
 
+  # Silent hard hangs (2026-10-20, 2026-10-25): nothing in the journal, no
+  # panic, NMI watchdog quiet. Hades Canyon (NUC8i7HVK) is known for freezing
+  # in deep C-states, so cap the idle state.
+  boot.kernelParams = [ "intel_idle.max_cstate=1" ];
+
+  # If it does lock up, panic rather than sit there: efi-pstore keeps the
+  # dmesg across the reboot (systemd-pstore drops it in /var/lib/systemd/pstore),
+  # and kernel.panic reboots after 10s.
+  boot.kernel.sysctl = {
+    "kernel.panic" = 10;
+    "kernel.panic_on_oops" = 1;
+    "kernel.softlockup_panic" = 1;
+    "kernel.hardlockup_panic" = 1;
+  };
+
+  # And the hardware watchdog for when the kernel cannot even manage that.
+  systemd.settings.Manager.RuntimeWatchdogSec = "30s";
+
   networking.hostName = "ashton-nuc";
 
   boot.loader.systemd-boot.enable = true;
