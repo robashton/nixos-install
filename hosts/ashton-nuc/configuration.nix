@@ -106,6 +106,10 @@
   # toolkit enabled in common/ just trips an assertion here.
   hardware.nvidia-container-toolkit.enable = lib.mkForce false;
 
+  # common/ leaves docker socket-activated (fine on laptops), but here the CI
+  # runner and moq relay have to come back by themselves after a watchdog reboot.
+  virtualisation.docker.enableOnBoot = lib.mkForce true;
+
   # Root is the whole disk now (444G), so docker uses the default /var/lib/docker.
   # The old data-root = "/home/docker" was a workaround for the 118G root, and went
   # away with the separate home partition.
