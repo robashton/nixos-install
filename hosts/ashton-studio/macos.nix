@@ -114,6 +114,11 @@ in
         PAGER = "less -R";
       };
 
+      # claude's native installer and the src-todo tools (norsk-daily, issues-*)
+      # both land in ~/.local/bin. Via home-manager's session vars this reaches
+      # every zsh, including the `zsh -lc` the install-services launchd agents run.
+      home.sessionPath = [ "$HOME/.local/bin" ];
+
       programs.zsh = {
         enable = true;
         enableCompletion = true;
