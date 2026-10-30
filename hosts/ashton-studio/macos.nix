@@ -2,7 +2,6 @@
 let
   brewPkgs = [
     "tailscale"
-
   ];
   brewCasks = [
     "audacity"
@@ -70,6 +69,7 @@ in
   programs.zsh.enable = true;
   programs.nix-index.enable = true;
 
+
   time.timeZone = "Europe/London";
 
   # Recreate /run/current-system symlink after boot
@@ -79,7 +79,7 @@ in
   homebrew = {
     enable = true;
     global.brewfile = true;
-    brewPrefix = "/opt/homebrew/bin";
+    prefix = "/opt/homebrew";
     onActivation = {
       autoUpdate = true;
       upgrade = true;
@@ -152,6 +152,8 @@ in
       };
     };
   };
+
+  system.primaryUser = "robashton";
 
   system.defaults = {
     dock = {

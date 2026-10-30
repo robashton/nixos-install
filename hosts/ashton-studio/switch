@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-nix build .\#darwinConfigurations.`hostname`.system
-./result/sw/bin/darwin-rebuild switch --flake .
-
+set -e
+nix build .\#darwinConfigurations.ashton-studio.system
+sudo ./result/sw/bin/darwin-rebuild switch --flake .#ashton-studio
