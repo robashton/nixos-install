@@ -122,7 +122,7 @@ in
       programs.zsh = {
         enable = true;
         enableCompletion = true;
-        initExtra = ''
+        initContent = ''
           test -f ~/.dir_colors && eval $(dircolors ~/.dir_colors)
           setopt no_share_history
           unsetopt share_history
@@ -148,7 +148,7 @@ in
 
       programs.git = {
         enable = true;
-        userName = "Rob Ashton"; userEmail = "robashton@codeofrob.com";
+        settings.user = { name = "Rob Ashton"; email = "robashton@codeofrob.com"; };
       };
     };
   };
