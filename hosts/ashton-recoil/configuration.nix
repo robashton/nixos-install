@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports =
@@ -125,6 +125,14 @@
     extra-trusted-public-keys = [ "norsk-cache-1:KwyoUy3m88th8dXuHPbH1Q8Sa8n0ntZBGGcBZB70dSQ=" ];
     accept-flake-config = true;
   };
+
+  # Recoil-only override: common/default.nix enables a daily Docker autoprune
+  # (docker system prune --all --filter until=24h) and a daily nix-gc
+  # (--delete-older-than 7d). On this machine that was silently reaping images
+  # and store paths I still wanted, forcing re-pulls/re-fetches. Disable both
+  # here; other hosts keep the common behaviour.
+  virtualisation.docker.autoPrune.enable = lib.mkForce false;
+  nix.gc.automatic = lib.mkForce false;
 
   services.xserver.videoDrivers = [ "amdgpu" "nvidia" ];
 
