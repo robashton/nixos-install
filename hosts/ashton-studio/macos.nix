@@ -107,6 +107,7 @@ in
       home.packages = nixPkgs;
       home.file.".ssh/id_rsa".text = pkgs.ashton-private.id_rsa;
       home.file.".ssh/id_ed25519".text = pkgs.ashton-private.id_ed25519;
+      home.file.".ssh/config".source = ../../common/files/sshconfig;
 
       # https://github.com/nix-community/home-manager/issues/423
       home.sessionVariables = {

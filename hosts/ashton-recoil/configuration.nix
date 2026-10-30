@@ -15,6 +15,7 @@
       ./../../common/power.nix
       ./../../common/laptop-suspend.nix
       ./../../common/pony-notify.nix
+      ./../../common/vpn-steve.nix
 
       # Hardware & user specific things
       ./robashton
@@ -51,12 +52,13 @@
   };
 
   # Enable networking
-  networking.networkmanager = { 
+  networking.networkmanager.enable = true;
+
+  # Always-on L2TP/IPsec link to Steve (buck2 cache). See common/vpn-steve.nix.
+  id3as.vpnSteve = {
     enable = true;
-    plugins = [
-      pkgs.networkmanager-l2tp
-      pkgs.networkmanager-strongswan # For IPsec part of L2TP
-    ];
+    # ashton-nuc holds the session; *.norsk ssh hops through it (common/files/sshconfig)
+    alwaysOn = false;
   };
 
   # Set your time zone.
@@ -87,39 +89,6 @@
   # Enable the GNOME Desktop Environment.
   services.xserver.displayManager.gdm.enable = true;
   services.xserver.desktopManager.gnome.enable = true;
-  services.strongswan = {
-    enable = true;
-    secrets = [
-      "ipsec.d/ipsec.nm-l2tp.secrets"
-    ];
-  };
-
-  # NetworkManager-l2tp runs `ipsec` outside the strongswan.service context, so it
-  # never sees that service's STRONGSWAN_CONF env var and falls back to reading
-  # /etc/strongswan.conf — which the services.strongswan module doesn't create.
-  # Without it, charon loads no crypto plugins and aborts ("HASH_SHA1 / NONCE_GEN
-  # unmet dependency", surfaced by NM as "integrity test of libstrongswan failed"),
-  # so the vpn-steve L2TP/IPsec connection fails to come up.
-  #
-  # This strongSwan build has no standalone sha1/aes/hmac plugins; it provides all
-  # crypto via the openssl plugin, so we must load plugins explicitly (load_modular
-  # = no) rather than rely on the empty per-plugin conf stubs.
-  environment.etc."strongswan.conf".text = ''
-    charon {
-      load_modular = no
-      load = random nonce openssl gmp pem pkcs1 pkcs8 pubkey x509 revocation constraints kernel-netlink socket-default stroke updown resolve xauth-generic
-
-      install_routes = no
-      install_virtual_ip = no
-
-      plugins {
-        stroke {
-          secrets_file = /etc/ipsec.secrets
-        }
-      }
-    }
-  '';
-
   nix.settings = {
     extra-substituters = [ "s3://norsk-binary-cache?region=eu-west-1" ];
     extra-trusted-public-keys = [ "norsk-cache-1:KwyoUy3m88th8dXuHPbH1Q8Sa8n0ntZBGGcBZB70dSQ=" ];

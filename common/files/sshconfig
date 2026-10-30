@@ -2,5 +2,21 @@
 host i-* mi-*
     ProxyCommand sh -c "aws ssm start-session --target %h --document-name AWS-StartSSHSession --parameters 'portNumber=%p'"
 
-ServerAliveInterval 30
-TCPKeepAlive yes
+# Steve's network (test2.norsk, arm.norsk, ...) is only reachable over the
+# vpn-steve L2TP link, which only ashton-nuc holds (see common/vpn-steve.nix),
+# so everything else hops through it. Names resolve on the nuc's side.
+Host *.norsk
+    User rob
+
+# ashton-studio never leaves the house, so it goes straight to the nuc on the LAN.
+Match host *.norsk exec "test %L = ashton-studio"
+    ProxyJump 192.168.1.221
+
+# Everything else (recoil is usually away from home) uses the public name, which
+# also works from inside the house. First ProxyJump wins, so the studio keeps its own.
+Match host *.norsk !exec "test %L = ashton-nuc"
+    ProxyJump ashtonnuc.ddns.net
+
+Host *
+    ServerAliveInterval 30
+    TCPKeepAlive yes

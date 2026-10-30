@@ -12,6 +12,7 @@
 
       # Common things
       ./../../common
+      ./../../common/vpn-steve.nix
 
 
       # Hardware & user specific things
@@ -78,11 +79,28 @@
 
   };
 
-  services.strongswan = {
-    enable = true;
-    secrets = [
-      "ipsec.d/ipsec.nm-l2tp.secrets"
-    ];
+  # Always-on L2TP/IPsec link to Steve, for the buck2 cache. See common/vpn-steve.nix.
+  id3as.vpnSteve.enable = true;
+
+  # NM will only bring a VPN up on top of a connection it manages itself, so the
+  # wired link (eno1, despite the enp5s0 references above) belongs to NM rather
+  # than dhcpcd. The client-id is the one dhcpcd sent (0xff, IAID = last 4 MAC
+  # bytes, then its DUID) so the router keeps handing out the same lease and the
+  # port forward behind ashtonnuc.ddns.net keeps working.
+  networking.dhcpcd.denyInterfaces = [ "eno1" ];
+  networking.networkmanager.ensureProfiles.profiles.eno1 = {
+    connection = {
+      id = "eno1";
+      type = "ethernet";
+      interface-name = "eno1";
+      autoconnect = "true";
+      autoconnect-priority = "100";
+    };
+    ipv4 = {
+      method = "auto";
+      dhcp-client-id = "ff:03:8c:f1:37:00:01:00:01:2e:e5:b1:c3:54:b2:03:8c:f1:37";
+    };
+    ipv6.method = "auto";
   };
 
   # Open ports in the firewall.
