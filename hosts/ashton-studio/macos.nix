@@ -83,7 +83,9 @@ in
     onActivation = {
       autoUpdate = true;
       upgrade = true;
-      cleanup = "zap";
+      # Homebrew removed `brew bundle --cleanup` (nix-darwin passes it for "zap"/"uninstall"),
+      # which aborts the whole activation. Back to "zap" once nix-darwin stops using it.
+      cleanup = "none";
     };
     taps = [
     ];
