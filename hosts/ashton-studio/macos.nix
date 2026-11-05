@@ -66,6 +66,35 @@ in
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.allowUnsupportedSystem = true;
 
+  # 2026-11-05 the disk hit 100% (nix store 96G, Docker VM disk 57G) and the Docker
+  # VM's filesystem was corrupted by the full disk. Collect nightly at 02:00, after
+  # the 01:44 coordinator handover.
+  nix.gc = {
+    automatic = true;
+    interval = { Hour = 2; Minute = 0; };
+    options = "--delete-older-than 14d";
+  };
+
+  # Docker's half of the same. Only things nothing is using: containers stopped for a
+  # day, images unused and over a week old, build cache over a week old. Volumes and
+  # networks are left alone (norsk-net etc.). Skips if Docker isn't running.
+  launchd.user.agents.docker-prune = {
+    path = [ "/usr/local/bin" "/usr/bin" "/bin" ];
+    script = ''
+      docker info >/dev/null 2>&1 || { echo "$(date) docker not running, skipping"; exit 0; }
+      echo "$(date) pruning"
+      docker container prune -f --filter until=24h
+      docker image prune -a -f --filter until=168h
+      docker builder prune -f --filter until=168h
+      docker system df
+    '';
+    serviceConfig = {
+      StartCalendarInterval = [ { Hour = 2; Minute = 15; } ];
+      StandardOutPath = "/Users/robashton/Library/Logs/docker-prune.log";
+      StandardErrorPath = "/Users/robashton/Library/Logs/docker-prune.log";
+    };
+  };
+
   programs.zsh.enable = true;
   programs.nix-index.enable = true;
 
