@@ -3,6 +3,9 @@
 
   inputs = {
     nixpkgs-unstable.url = github:nixos/nixpkgs/nixpkgs-unstable;
+    # Nix itself from a newer nixpkgs than the system: 2.35 stops nix develop copying
+    # the whole flake source into the store each time (disk filled on 2026-11-19).
+    nixpkgs-nix.url = github:nixos/nixpkgs/e21fec321d73511849707a7585e4ea155ee4bf40;
     darwin.url = github:lnl7/nix-darwin;
     home-manager.url = github:nix-community/home-manager;
 
@@ -28,6 +31,7 @@
         ({ pkgs, ... }: {
           system.configurationRevision = nixpkgs-unstable.lib.mkIf (self ? rev) self.rev;
           nix.extraOptions = "experimental-features = nix-command flakes";
+          nix.package = (import inputs.nixpkgs-nix { system = "aarch64-darwin"; }).nixVersions.nix_2_35;
           nixpkgs.overlays = [
              (_: _: { ashton-private = inputs.private.legacyPackages.aarch64-darwin; })
              (_: _: { ashton-neovim = inputs.neovim.packages.aarch64-darwin.default; })

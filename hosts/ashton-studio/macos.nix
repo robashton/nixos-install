@@ -62,7 +62,7 @@ in
 {
   networking.hostName = hostname;
 
-  nix.package = pkgs.nixVersions.stable;
+  # nix.package is set in flake.nix (Nix 2.35 from its own nixpkgs input).
   nixpkgs.config.allowUnfree = true;
   nixpkgs.config.allowUnsupportedSystem = true;
 
