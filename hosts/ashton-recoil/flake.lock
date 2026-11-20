@@ -501,11 +501,11 @@
         "nixpkgs": "nixpkgs_4"
       },
       "locked": {
-        "lastModified": 1758008032,
-        "narHash": "sha256-eKgL+UgISdO++awJzaUutf+qUVNeKuj5JVuUc5xsAt8=",
+        "lastModified": 1795194669,
+        "narHash": "sha256-GFSBqD206F8vkOl7U6xfwSX8/03NFq5e+I+0PY1T0Fg=",
         "ref": "refs/heads/master",
-        "rev": "685ed0e17d77048684fd26c2bbb8ae78f94fadb2",
-        "revCount": 9,
+        "rev": "2e39385aa0a83f18c9c79fdfba9c99b772ecb11c",
+        "revCount": 10,
         "type": "git",
         "url": "ssh://git@github.com/robashton/nixos-install-private"
       },

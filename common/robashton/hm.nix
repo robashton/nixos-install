@@ -7,6 +7,7 @@ let
     ./hm-neovim.nix
     ./hm-git.nix
     ./hm-direnv.nix
+    ./hm-pass.nix
   ] ++ lib.optionals desktop [
     # xmonad drags in a full GHC (1.8G + 752M of docs) and emacs a GTK stack,
     # neither of which a headless box has any use for.
